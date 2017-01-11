@@ -2,11 +2,12 @@
 # Filename:                ironic.sh
 # Description:             ironic node import and set dns 
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-01-11 14:58:33 jfulton> 
+# Time-stamp:              <2017-01-11 17:39:49 jfulton> 
 # -------------------------------------------------------
 DELETE=0
-INSPECT=1
-TAG_HCI=1
+INSPECT=0
+TAG_HCI=0
+FORCE=1
 # -------------------------------------------------------
 source ~/stackrc
 
@@ -67,4 +68,13 @@ if [ $TAG_HCI -eq 1 ]; then
     ./ironic-assign.sh ceph-0 osd-compute
     # put seprate compute node in maintenance mode
     ironic node-set-maintenance compute-0 on
+fi
+# -------------------------------------------------------
+if [ $FORCE -eq 1 ]; then
+    # set all nodes to available and not in maintenance
+    for ironic_id in $(ironic node-list | awk {'print $2'} | grep -v UUID | egrep -v '^$');
+    do
+	ironic node-set-provision-state $ironic_id provide
+	ironic node-set-maintenance $ironic_id false
+    done
 fi

@@ -1,0 +1,14 @@
+parameter_defaults:
+  ControllerCount: 1
+  ComputeCount: 0
+  CephStorageCount: 0
+  OsdComputeCount: 1
+
+  ControllerSchedulerHints:
+    'capabilities:node': 'controller-%index%'
+  NovaComputeSchedulerHints:
+    'capabilities:node': 'compute-%index%'
+  CephStorageSchedulerHints:
+    'capabilities:node': 'ceph-storage-%index%'
+  OsdComputeSchedulerHints:
+    'capabilities:node': 'osd-compute-%index%'

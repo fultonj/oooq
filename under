@@ -1,0 +1,1 @@
+ssh -A -F /home/jfulton/.quickstart/ssh.config.ansible undercloud

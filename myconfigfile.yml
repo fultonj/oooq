@@ -1,7 +1,7 @@
-undercloud_memory: 10240
+undercloud_memory: 8192
 control_memory: 7168
-compute_memory: 2048
-ceph_memory: 2048
+compute_memory: 512
+ceph_memory: 5120
 
 overcloud_nodes:
   - name: control_0

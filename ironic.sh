@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Filename:                ironic-dns.sh
+# Filename:                ironic.sh
 # Description:             ironic node import and set dns 
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-01-11 10:31:54 jfulton> 
+# Time-stamp:              <2017-01-11 13:32:22 jfulton> 
 # -------------------------------------------------------
 DELETE=0
 INSPECT=1

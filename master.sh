@@ -2,14 +2,14 @@
 # Filename:                master.sh
 # Description:             Sets up my dev env
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-01-11 14:22:34 jfulton> 
+# Time-stamp:              <2017-01-11 15:03:41 jfulton> 
 # -------------------------------------------------------
-CLONEQ=0
-RUNQ=0
-DISK=0
-IMG=0
+CLONEQ=1
+RUNQ=1
+DISK=1
+IMG=1
 SCRIPTS=1
-LOCAL=0
+LOCAL=1
 # -------------------------------------------------------
 export SSH_ENV=~/.quickstart/ssh.config.ansible
 export VIRTHOST=$(hostname)

@@ -2,14 +2,14 @@
 # Filename:                master.sh
 # Description:             Sets up my dev env
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-01-11 13:29:58 jfulton> 
+# Time-stamp:              <2017-01-11 14:22:34 jfulton> 
 # -------------------------------------------------------
 CLONEQ=0
 RUNQ=0
 DISK=0
 IMG=0
-SCRIPTS=0
-LOCAL=1
+SCRIPTS=1
+LOCAL=0
 # -------------------------------------------------------
 export SSH_ENV=~/.quickstart/ssh.config.ansible
 export VIRTHOST=$(hostname)
@@ -33,13 +33,13 @@ if [ $IMG -eq 1 ]; then
 fi
 
 if [ $SCRIPTS -eq 1 ]; then
-    tar cvfz scripts.tar.gz git-init.sh deploy.sh dns.sh ironic.sh ironic-assign.sh wtf tht/
-    scp -F $SSH_ENV scripts.tar.gz stack@undercloud:/home/stack/
-    ssh -F $SSH_ENV stack@undercloud "tar xf scripts.tar.gz"
-    ssh -F $SSH_ENV stack@undercloud "echo 'source /home/stack/stackrc' >> ~/.bashrc"
+    # make it easy to pull this repo to the underlcoud
+    ssh -F $SSH_ENV stack@undercloud "echo 'git clone git@github.com:fultonj/oooq.git' >> sh_me"    
 fi
 
 if [ $LOCAL -eq 1 ]; then
+    # set default to source stackrc
+    ssh -F $SSH_ENV stack@undercloud "echo 'source /home/stack/stackrc' >> ~/.bashrc"
     # install my personal key on undercloud using key provided by quickstart
     scp -F $SSH_ENV cat ~/.ssh/id_rsa.pub stack@undercloud:/home/stack/
     ssh -F $SSH_ENV stack@undercloud "cat ~/id_rsa.pub >> ~/.ssh/authorized_keys"

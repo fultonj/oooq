@@ -2,7 +2,7 @@
 # Filename:                master.sh
 # Description:             Sets up my dev env
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-01-11 08:28:12 jfulton> 
+# Time-stamp:              <2017-01-11 10:34:01 jfulton> 
 # -------------------------------------------------------
 CLONEQ=1
 RUNQ=1
@@ -32,7 +32,8 @@ if [ $IMG -eq 1 ]; then
 fi
 
 if [ $SCRIPTS -eq 1 ]; then
-    tar cvfz scripts.tar.gz git-init.sh deploy.sh ironic-dns.sh wtf tht/
+    tar cvfz scripts.tar.gz git-init.sh deploy.sh dns.sh ironic.sh ironic-assign.sh wtf tht/
     scp -F $SSH_ENV scripts.tar.gz stack@undercloud:/home/stack/
     ssh -F $SSH_ENV stack@undercloud "tar xf scripts.tar.gz"
+    ssh -F $SSH_ENV stack@undercloud "echo 'source /home/stack/stackrc' >> ~/.bashrc"
 fi

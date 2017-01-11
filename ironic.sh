@@ -2,7 +2,7 @@
 # Filename:                ironic.sh
 # Description:             ironic node import and set dns 
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-01-11 13:32:22 jfulton> 
+# Time-stamp:              <2017-01-11 14:58:33 jfulton> 
 # -------------------------------------------------------
 DELETE=0
 INSPECT=1
@@ -11,7 +11,6 @@ TAG_HCI=1
 source ~/stackrc
 
 if [ $DELETE -eq 1 ]; then
-    source stackrc
     # delete all ironic nodes, including ones described in: 
     #  http://blog.johnlikesopenstack.com/2016/08/ironic-node-clinging-to-nova-instance.html
     ironic node-list | grep  "power off" | awk {'print $6'} | grep -v "None" > /tmp/ironic_nova_zombies
@@ -66,4 +65,6 @@ fi
 if [ $TAG_HCI -eq 1 ]; then
     ./ironic-assign.sh control-0 controller
     ./ironic-assign.sh ceph-0 osd-compute
+    # put seprate compute node in maintenance mode
+    ironic node-set-maintenance compute-0 on
 fi

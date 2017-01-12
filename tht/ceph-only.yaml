@@ -1,0 +1,19 @@
+resource_registry:
+  OS::TripleO::Services::CephMon: /usr/share/openstack-tripleo-heat-templates/puppet/services/ceph-mon.yaml
+  OS::TripleO::Services::CephOSD: /usr/share/openstack-tripleo-heat-templates/puppet/services/ceph-osd.yaml
+
+parameters:
+  ControllerServices:
+    - OS::TripleO::Services::CephMon
+  CephStorageServices:
+    - OS::TripleO::Services::CephOSD
+
+  ControllerSchedulerHints:
+    'capabilities:node': 'controller-%index%'
+  CephStorageSchedulerHints:
+    'capabilities:node': 'ceph-storage-%index%'
+    
+  #OvercloudControllerFlavor: 'baremetal'
+  #OvercloudNovaComputeFlavor: 'baremetal'
+  #OvercloudCephStorageFlavor: 'baremetal'
+  

@@ -1,17 +1,8 @@
-undercloud_memory: 8192
-control_memory: 7168
-compute_memory: 512
-ceph_memory: 5120
-
 overcloud_nodes:
   - name: control_0
     flavor: control
     virtualbmc_port: 6230
 
-  - name: compute_0
-    flavor: compute
-    virtualbmc_port: 6231
-
   - name: ceph_0
     flavor: ceph
-    virtualbmc_port: 6232
+    virtualbmc_port: 6231

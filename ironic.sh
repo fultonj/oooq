@@ -2,12 +2,14 @@
 # Filename:                ironic.sh
 # Description:             ironic node import and set dns 
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-01-11 17:39:49 jfulton> 
+# Time-stamp:              <2017-01-12 08:27:19 jfulton> 
 # -------------------------------------------------------
 DELETE=0
+BOUNCE=1
 INSPECT=0
 TAG_HCI=0
-FORCE=1
+TAG_CEPH_ONLY=0
+FORCE=0
 # -------------------------------------------------------
 source ~/stackrc
 
@@ -28,9 +30,12 @@ if [ $DELETE -eq 1 ]; then
     for ironic_id in $(ironic node-list | grep  "power off" | awk {'print $2'}); do
 	ironic node-delete $ironic_id
     done
-    # for svc in $(systemctl list-unit-files | grep ironic | awk {'print $1'}); do
-    # 	sudo systemctl restart $svc;
-    # done
+fi
+# -------------------------------------------------------
+if [ $BOUNCE -eq 1 ]; then
+    for svc in $(systemctl list-unit-files | grep ironic | awk {'print $1'}); do
+	sudo systemctl restart $svc;
+    done
 fi
 # -------------------------------------------------------
 if [ $INSPECT -eq 1 ]; then
@@ -66,8 +71,13 @@ fi
 if [ $TAG_HCI -eq 1 ]; then
     ./ironic-assign.sh control-0 controller
     ./ironic-assign.sh ceph-0 osd-compute
-    # put seprate compute node in maintenance mode
-    ironic node-set-maintenance compute-0 on
+    ./ironic-assign.sh compute-0 compute    
+fi
+# -------------------------------------------------------
+if [ $TAG_CEPH_ONLY -eq 1 ]; then
+    ./ironic-assign.sh control-0 control
+    ./ironic-assign.sh ceph-0 ceph-storage
+    ./ironic-assign.sh compute-0 compute
 fi
 # -------------------------------------------------------
 if [ $FORCE -eq 1 ]; then

@@ -2,13 +2,13 @@
 # Filename:                master.sh
 # Description:             Sets up my dev env
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-01-11 15:03:41 jfulton> 
+# Time-stamp:              <2017-01-12 12:11:14 jfulton> 
 # -------------------------------------------------------
-CLONEQ=1
-RUNQ=1
-DISK=1
-IMG=1
-SCRIPTS=1
+CLONEQ=0
+RUNQ=0
+DISK=0
+IMG=0
+SCRIPTS=0
 LOCAL=1
 # -------------------------------------------------------
 export SSH_ENV=~/.quickstart/ssh.config.ansible
@@ -34,7 +34,7 @@ fi
 
 if [ $SCRIPTS -eq 1 ]; then
     # make it easy to pull this repo to the underlcoud
-    ssh -F $SSH_ENV stack@undercloud "echo 'git clone git@github.com:fultonj/oooq.git' >> sh_me"    
+    ssh -F $SSH_ENV stack@undercloud "echo 'git clone git@github.com:fultonj/oooq.git ; ln   -s oooq/tht' >> sh_me"    
 fi
 
 if [ $LOCAL -eq 1 ]; then

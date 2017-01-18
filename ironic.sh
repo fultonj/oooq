@@ -2,14 +2,14 @@
 # Filename:                ironic.sh
 # Description:             ironic node import and set dns 
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-01-12 08:27:19 jfulton> 
+# Time-stamp:              <2017-01-18 15:26:25 jfulton> 
 # -------------------------------------------------------
 DELETE=0
-BOUNCE=1
+BOUNCE=0
 INSPECT=0
+FORCE=1
 TAG_HCI=0
-TAG_CEPH_ONLY=0
-FORCE=0
+TAG_CEPH_ONLY=1
 # -------------------------------------------------------
 source ~/stackrc
 
@@ -68,18 +68,6 @@ if [ $INSPECT -eq 1 ]; then
     done
 fi
 # -------------------------------------------------------
-if [ $TAG_HCI -eq 1 ]; then
-    ./ironic-assign.sh control-0 controller
-    ./ironic-assign.sh ceph-0 osd-compute
-    ./ironic-assign.sh compute-0 compute    
-fi
-# -------------------------------------------------------
-if [ $TAG_CEPH_ONLY -eq 1 ]; then
-    ./ironic-assign.sh control-0 control
-    ./ironic-assign.sh ceph-0 ceph-storage
-    ./ironic-assign.sh compute-0 compute
-fi
-# -------------------------------------------------------
 if [ $FORCE -eq 1 ]; then
     # set all nodes to available and not in maintenance
     for ironic_id in $(ironic node-list | awk {'print $2'} | grep -v UUID | egrep -v '^$');
@@ -87,4 +75,14 @@ if [ $FORCE -eq 1 ]; then
 	ironic node-set-provision-state $ironic_id provide
 	ironic node-set-maintenance $ironic_id false
     done
+fi
+# -------------------------------------------------------
+if [ $TAG_HCI -eq 1 ]; then
+    ./ironic-assign.sh control-0 controller
+    ./ironic-assign.sh ceph-0 osd-compute
+fi
+# -------------------------------------------------------
+if [ $TAG_CEPH_ONLY -eq 1 ]; then
+    ./ironic-assign.sh control-0 controller
+    ./ironic-assign.sh ceph-0 ceph-storage
 fi

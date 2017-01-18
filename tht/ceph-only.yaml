@@ -23,4 +23,3 @@ parameter_defaults:
         journal: '/dev/vdf'
       '/dev/vde':
         journal: '/dev/vdf'
-    

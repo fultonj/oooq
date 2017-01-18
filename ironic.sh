@@ -2,7 +2,7 @@
 # Filename:                ironic.sh
 # Description:             ironic node import and set dns 
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-01-18 15:17:34 jfulton> 
+# Time-stamp:              <2017-01-18 15:26:25 jfulton> 
 # -------------------------------------------------------
 DELETE=0
 BOUNCE=0
@@ -83,6 +83,6 @@ if [ $TAG_HCI -eq 1 ]; then
 fi
 # -------------------------------------------------------
 if [ $TAG_CEPH_ONLY -eq 1 ]; then
-    ./ironic-assign.sh control-0 control
+    ./ironic-assign.sh control-0 controller
     ./ironic-assign.sh ceph-0 ceph-storage
 fi

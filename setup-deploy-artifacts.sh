@@ -2,7 +2,7 @@
 # Filename:                setup-deploy-artifacts.sh
 # Description:             sets up dev env
 # Supported Langauge(s):   GNU Bash 4.2.x
-# Time-stamp:              <2017-01-18 21:25:33 jfulton>
+# Time-stamp:              <2017-01-19 00:04:44 jfulton>
 # -------------------------------------------------------
 # This is a quick shell script to set up what's desc in: 
 # http://hardysteven.blogspot.com/2016/08/tripleo-deploy-artifacts-and-puppet.html
@@ -82,14 +82,17 @@ for repo in "${repos[@]}"; do
     repo=$(echo $repo | xargs) # trim whitespace 
     echo "Cloning $repo"
     dir=$(echo $repo | awk 'BEGIN { FS = "/" } ; { print $2 }')
-    if [[ $dir == *"puppet"* ]]; then
+    if [[ $repo == *"puppet"* ]]; then
 	pushd ~/puppet-modules
+	# change name for when it lands in /etc/puppet/modules on overcloud
+	dir=$(echo $dir | sed s/puppet-//g)
     fi
     if [ ! -d $dir ]; then
 	url=https://git.openstack.org/$repo.git
 	remove_file_count=$(git ls-remote $url | wc -l)
 	if [ $remove_file_count -gt 0 ]; then
-	    git clone $url
+	    # rename it to drop the "puppet-" xor it works for non-puppet too
+	    git clone $url $dir
 	    if [ -d $dir ]; then
 		pushd $dir
 		git remote add gerrit ssh://$gerrit_user@review.openstack.org:29418/$repo.git
@@ -106,7 +109,7 @@ for repo in "${repos[@]}"; do
 	git pull --ff-only origin master
 	popd
     fi
-    if [[ $dir == *"puppet"* ]]; then
+    if [[ $repo == *"puppet"* ]]; then
 	popd # out of ~/puppet-modules
     fi
 done

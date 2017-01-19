@@ -2,7 +2,7 @@
 # Filename:                setup-deploy-artifacts.sh
 # Description:             sets up dev env
 # Supported Langauge(s):   GNU Bash 4.2.x
-# Time-stamp:              <2017-01-18 20:46:18 jfulton>
+# Time-stamp:              <2017-01-18 21:25:33 jfulton>
 # -------------------------------------------------------
 # This is a quick shell script to set up what's desc in: 
 # http://hardysteven.blogspot.com/2016/08/tripleo-deploy-artifacts-and-puppet.html
@@ -45,8 +45,8 @@ declare -a repos=(
       'openstack/tripleo-heat-templates'\
       'openstack/puppet-ceph'\
       'openstack/puppet-tripleo'\
-      'openstack/puppet-openstack-integration'\
-      'openstack-infra/tripleo-ci'\
+      #'openstack/puppet-openstack-integration'\
+      #'openstack-infra/tripleo-ci'\
       # add the next repo here
 );
 # The first item must be tripleo-common.
@@ -92,7 +92,7 @@ for repo in "${repos[@]}"; do
 	    git clone $url
 	    if [ -d $dir ]; then
 		pushd $dir
-		git remote add gerrit ssh://$gerrit_user@review.openstack.org:29418/$repos.git
+		git remote add gerrit ssh://$gerrit_user@review.openstack.org:29418/$repo.git
 		git review -s
 		popd
 	    else

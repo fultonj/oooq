@@ -2,10 +2,11 @@
 # Filename:                master.sh
 # Description:             Sets up my dev env
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-01-20 16:53:36 jfulton> 
+# Time-stamp:              <2017-01-20 18:02:46 jfulton> 
 # -------------------------------------------------------
 CLONEQ=1
 RUNQ=1
+PKGS=1
 DISK=1
 IMG=0
 SCRIPTS=1
@@ -22,6 +23,10 @@ fi
 
 if [ $RUNQ -eq 1 ]; then
     bash quickstart.sh -e supported_distro_check=false --teardown all --release master-tripleo-ci -e @myconfigfile.yml $VIRTHOST    
+fi
+
+if [ $PKGS -eq 1 ]; then
+    bash pkgs.sh
 fi
 
 if [ $DISK -eq 1 ]; then

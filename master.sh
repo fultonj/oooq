@@ -2,7 +2,7 @@
 # Filename:                master.sh
 # Description:             Sets up my dev env
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-01-18 18:21:23 jfulton> 
+# Time-stamp:              <2017-01-20 16:53:36 jfulton> 
 # -------------------------------------------------------
 CLONEQ=1
 RUNQ=1
@@ -40,11 +40,26 @@ fi
 if [ $LOCAL -eq 1 ]; then
     # set default to source stackrc
     ssh -F $SSH_ENV stack@undercloud "echo 'source /home/stack/stackrc' >> ~/.bashrc"
-    # install my personal key on undercloud using key provided by quickstart
-    scp -F $SSH_ENV cat ~/.ssh/id_rsa.pub stack@undercloud:/home/stack/
-    ssh -F $SSH_ENV stack@undercloud "cat ~/id_rsa.pub >> ~/.ssh/authorized_keys"
-    # get local simple IP that my emacs tramp can reach
+
+    if [ -f ~/.ssh/id_rsa.pub ]; then
+	# install my personal key on undercloud using key provided by quickstart
+	scp -F $SSH_ENV cat ~/.ssh/id_rsa.pub stack@undercloud:/home/stack/
+	ssh -F $SSH_ENV stack@undercloud "cat ~/id_rsa.pub >> ~/.ssh/authorized_keys"
+    else
+	# set a known password for the stack user
+	ssh -F $SSH_ENV stack@undercloud "sudo su -c \"echo abc123 | passwd --stdin stack\""
+    fi
+    
+    # get local simple IP that either the local emacs tramp OR tunnel.sh can reach
     ip=$(ssh -F $SSH_ENV stack@undercloud "/sbin/ip a | grep 192.168.23" | awk {'print $2'} | sed s/\\/24//g)
-    # update my tramp entry (assuming my .emacs only talks to 23 for underlap)
-    sed -i -e s/192.168.23.[0-9]*/$ip/g ~/.emacs
+    if [ -f ~/.emacs ]; then
+	# update tramp entry (assuming my .emacs only talks to 192.168.23.0/24 for underlap)
+	echo "updating local ~/.emacs"
+	sed -i -e s/192.168.23.[0-9]*/$ip/g ~/.emacs
+    else
+	echo "Undercloud IP for tunnel.sh is $ip"
+    fi
+
+    echo "Configuring SSH on undercloud to not warn about unknown hosts"
+    ssh -F $SSH_ENV stack@undercloud "cat /dev/null > ~/.ssh/config ; echo StrictHostKeyChecking\ no >> ~/.ssh/config ; echo UserKnownHostsFile=/dev/null >> ~/.ssh/config ; echo LogLevel\ ERROR >> ~/.ssh/config ; chmod 0600 ~/.ssh/config ; chmod 0700 ~/.ssh/"
 fi

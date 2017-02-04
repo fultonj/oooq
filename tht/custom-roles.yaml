@@ -192,3 +192,27 @@
     - OS::TripleO::Services::OpenDaylightOvs
     - OS::TripleO::Services::SensuClient
     - OS::TripleO::Services::FluentdClient
+
+- name: JeOsMon
+  CountDefault: 0
+  HostnameFormatDefault: '%stackname%-jeos-mon-%index%'
+  ServicesDefault:
+    - OS::TripleO::Services::CACerts
+    - OS::TripleO::Services::Timezone
+    - OS::TripleO::Services::Ntp
+    - OS::TripleO::Services::Snmp
+    - OS::TripleO::Services::Kernel
+    - OS::TripleO::Services::TripleoPackages
+    - OS::TripleO::Services::TripleoFirewall
+
+- name: JeOsOsd
+  CountDefault: 0
+  HostnameFormatDefault: '%stackname%-jeos-osd-%index%'
+  ServicesDefault:
+    - OS::TripleO::Services::CACerts
+    - OS::TripleO::Services::Timezone
+    - OS::TripleO::Services::Ntp
+    - OS::TripleO::Services::Snmp
+    - OS::TripleO::Services::Kernel
+    - OS::TripleO::Services::TripleoPackages
+    - OS::TripleO::Services::TripleoFirewall

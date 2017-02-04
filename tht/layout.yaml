@@ -1,9 +1,11 @@
 parameter_defaults:
-  ControllerCount: 1
+  ControllerCount: 0
   ComputeCount: 0
   CephStorageCount: 0
-  OsdComputeCount: 1
-
+  OsdComputeCount: 0
+  JeOsMonCount: 1
+  JeOsOsdCount: 1  
+  
   ControllerSchedulerHints:
     'capabilities:node': 'controller-%index%'
   NovaComputeSchedulerHints:
@@ -12,3 +14,7 @@ parameter_defaults:
     'capabilities:node': 'ceph-storage-%index%'
   OsdComputeSchedulerHints:
     'capabilities:node': 'osd-compute-%index%'
+  JeOsMonSchedulerHints:
+    'capabilities:node': 'jeos-mon-%index%'
+  JeOsOsdSchedulerHints:
+    'capabilities:node': 'jeos-osd-%index%'

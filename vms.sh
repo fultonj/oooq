@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Filename:                vms.sh
 # Description:             runs commands as stack@virthost
-# Time-stamp:              <2017-02-03 19:07:04 jfulton> 
+# Time-stamp:              <2017-02-03 20:23:36 jfulton> 
 # -------------------------------------------------------
 # another crude but effective wrapper for the lazy
 # -------------------------------------------------------
@@ -9,7 +9,7 @@ case "$1" in
         undercloud)
 	    case "$2" in
 		stop)
-		    cmd='virsh stop undercloud'
+		    cmd='virsh shutdown undercloud'
 		    ;;
 		start)
 		    cmd='virsh start undercloud'
@@ -28,7 +28,8 @@ case "$1" in
 	    cmd='for vm in $(virsh list --all | awk {"print \$2"} | egrep -v "Name|^$"); do echo "running resume $vm"; virsh resume $vm; done'
             ;;
         stop)
-            cmd='for vm in $(virsh list --all | awk {"print \$2"} | egrep -v "Name|^$"); do echo "running stop $vm"; virsh stop $vm; done'
+            cmd='for vm in $(virsh list --all | awk {"print \$2"} | egrep -v "Name|^$"); do echo "running shutdown $vm"; virsh shutdown $vm; done'
+	    echo $cmd
             ;;
         suspend)
 	    cmd='for vm in $(virsh list --all | awk {"print \$2"} | egrep -v "Name|^$"); do echo "running suspend $vm"; virsh suspend $vm; done'

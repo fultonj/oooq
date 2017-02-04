@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Filename:                vms.sh
 # Description:             runs commands as stack@virthost
-# Time-stamp:              <2017-02-03 17:30:26 jfulton> 
+# Time-stamp:              <2017-02-03 19:07:04 jfulton> 
 # -------------------------------------------------------
 # another crude but effective wrapper for the lazy
 # -------------------------------------------------------
@@ -13,6 +13,12 @@ case "$1" in
 		    ;;
 		start)
 		    cmd='virsh start undercloud'
+		    ;;
+		suspend)
+		    cmd='virsh suspend undercloud'
+		    ;;
+		resume)
+		    cmd='virsh resume undercloud'
 		    ;;
 		*)
 		    cmd="virsh list --all"

@@ -203,7 +203,6 @@
     - OS::TripleO::Services::Snmp
     - OS::TripleO::Services::Kernel
     - OS::TripleO::Services::TripleoPackages
-    - OS::TripleO::Services::TripleoFirewall
 
 - name: JeOsOsd
   CountDefault: 0
@@ -215,4 +214,3 @@
     - OS::TripleO::Services::Snmp
     - OS::TripleO::Services::Kernel
     - OS::TripleO::Services::TripleoPackages
-    - OS::TripleO::Services::TripleoFirewall

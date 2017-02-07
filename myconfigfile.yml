@@ -6,3 +6,9 @@ overcloud_nodes:
   - name: ceph_0
     flavor: ceph
     virtualbmc_port: 6231
+
+  # - name: ceph_0
+  #   flavor: oooq_ceph
+  #   virtualbmc_port: 6231
+  #   extradisks: true
+  # The above should create /dev/vd{a,b,c} in place of add-disks.sh

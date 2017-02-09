@@ -2,7 +2,7 @@
 # Filename:                ironic.sh
 # Description:             ironic node import and set dns 
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-02-04 11:44:54 jfulton> 
+# Time-stamp:              <2017-02-09 14:49:56 jfulton> 
 # -------------------------------------------------------
 DELETE=0
 BOUNCE=0
@@ -10,7 +10,8 @@ INSPECT=0
 FORCE=0
 TAG_HCI=0
 TAG_CEPH_ONLY=0
-TAG_JEOS=1
+TAG_JEOS=0
+TAG_HCI_MISTRAL_CEPH=1
 # -------------------------------------------------------
 source ~/stackrc
 
@@ -92,3 +93,11 @@ if [ $TAG_JEOS -eq 1 ]; then
     ./ironic-assign.sh control-0 jeos-mon
     ./ironic-assign.sh ceph-0 jeos-osd
 fi
+# -------------------------------------------------------
+if [ $TAG_HCI_MISTRAL_CEPH -eq 1 ]; then
+    ./ironic-assign.sh control-0 controller
+    ./ironic-assign.sh ceph-0 compute
+fi
+
+
+

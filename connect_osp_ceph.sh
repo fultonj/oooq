@@ -1,0 +1,1 @@
+<html><body>You are being <a href="https://raw.githubusercontent.com/RHsyseng/conv-osp-ceph/osp8_ceph1.3/scripts/connect_osp_ceph.sh">redirected</a>.</body></html>

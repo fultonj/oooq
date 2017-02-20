@@ -15,4 +15,4 @@ export GEM_HOME=`pwd`/.bundled_gems
 bundle install
 export BEAKER_set=nodepool-$OS_TYPE
 export BEAKER_debug=yes
-bundle exec rspec spec/acceptance
+bundle exec rake spec

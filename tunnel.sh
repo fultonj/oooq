@@ -13,4 +13,4 @@ hypervisor=10.19.139.29
 undercloud=192.168.23.18 
 echo "Tunneling from localhost:2222 to undercloud:22 via $hypervisor"
 ssh -f -L 2222:$undercloud:22 -N $hypervisor 
-echo "Try: ssh stack@localhost -p 2222"
+echo " ssh stack@localhost -p 2222"

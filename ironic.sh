@@ -2,7 +2,7 @@
 # Filename:                ironic.sh
 # Description:             ironic node import and set dns 
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-02-09 14:49:56 jfulton> 
+# Time-stamp:              <2017-02-21 15:06:45 jfulton> 
 # -------------------------------------------------------
 DELETE=0
 BOUNCE=0
@@ -46,7 +46,7 @@ if [ $INSPECT -eq 1 ]; then
 	exit 1
     fi
     echo "Importing hardware list"
-    openstack baremetal import ~/instackenv.json
+    openstack overcloud node import ~/instackenv.json
 
     echo "Assigning the kernel and ramdisk images to all nodes"
     openstack baremetal configure boot 

@@ -11,7 +11,7 @@ FORCE=0
 TAG_HCI=0
 TAG_CEPH_ONLY=0
 TAG_JEOS=0
-TAG_HCI_MISTRAL_CEPH=1
+TAG_HCI_MISTRAL_CEPH=1 # works for docker-compute too
 # -------------------------------------------------------
 source ~/stackrc
 
@@ -98,6 +98,3 @@ if [ $TAG_HCI_MISTRAL_CEPH -eq 1 ]; then
     ./ironic-assign.sh control-0 controller
     ./ironic-assign.sh ceph-0 compute
 fi
-
-
-

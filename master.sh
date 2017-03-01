@@ -2,15 +2,15 @@
 # Filename:                master.sh
 # Description:             Sets up my dev env
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-01-20 18:02:46 jfulton> 
+# Time-stamp:              <2017-03-01 00:18:38 jfulton> 
 # -------------------------------------------------------
-CLONEQ=1
+CLONEQ=0
 RUNQ=1
-PKGS=1
-DISK=1
+PKGS=0
+DISK=0
 IMG=0
-SCRIPTS=1
-LOCAL=1
+SCRIPTS=0
+LOCAL=0
 # -------------------------------------------------------
 export SSH_ENV=~/.quickstart/ssh.config.ansible
 export VIRTHOST=$(hostname)
@@ -22,7 +22,7 @@ if [ $CLONEQ -eq 1 ]; then
 fi    
 
 if [ $RUNQ -eq 1 ]; then
-    bash quickstart.sh -e supported_distro_check=false --teardown all --release master-tripleo-ci -e @myconfigfile.yml $VIRTHOST    
+    bash quickstart.sh -e supported_distro_check=false -e enable_vnc_console=true --teardown all --release ocata -e @myconfigfile.yml $VIRTHOST    
 fi
 
 if [ $PKGS -eq 1 ]; then

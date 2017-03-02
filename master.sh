@@ -2,14 +2,14 @@
 # Filename:                master.sh
 # Description:             Sets up my dev env
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-03-01 00:18:38 jfulton> 
+# Time-stamp:              <2017-03-02 13:31:09 jfulton> 
 # -------------------------------------------------------
-CLONEQ=0
+CLONEQ=1
 RUNQ=1
 PKGS=0
 DISK=0
 IMG=0
-SCRIPTS=0
+SCRIPTS=1
 LOCAL=0
 # -------------------------------------------------------
 export SSH_ENV=~/.quickstart/ssh.config.ansible
@@ -30,6 +30,7 @@ if [ $PKGS -eq 1 ]; then
 fi
 
 if [ $DISK -eq 1 ]; then
+    # shouldn't be necessary now the tripleo-quickstart supports something like it
     bash run-add-disks.sh
 fi
 

@@ -12,10 +12,6 @@ parameter_defaults:
     ceph::profile::params::osd_journal_size: 5120
     ceph::profile::params::osds:
       '/dev/vdb':
-        journal: '/dev/vdf'
+        journal: '/dev/vdd'
       '/dev/vdc':
-        journal: '/dev/vdf'
-      '/dev/vdd':
-        journal: '/dev/vdf'
-      '/dev/vde':
-        journal: '/dev/vdf' 
+        journal: '/dev/vdd'

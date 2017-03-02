@@ -16,10 +16,6 @@ parameter_defaults:
   CephStorageExtraConfig:
     ceph::profile::params::osds:
       '/dev/vdb':
-        journal: '/dev/vdf'
+        journal: '/dev/vdd'
       '/dev/vdc':
-        journal: '/dev/vdf'
-      '/dev/vdd':
-        journal: '/dev/vdf'
-      '/dev/vde':
-        journal: '/dev/vdf'
+        journal: '/dev/vdd'

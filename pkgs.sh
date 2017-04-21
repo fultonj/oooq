@@ -14,7 +14,7 @@ if [ $DOWNLOAD -eq 1 ]; then
     if [ ! -d pkgs ]; then
 	mkdir pkgs
     fi
-    for pkg in git-review-1.24-5.el7.noarch.rpm reptyr-0.5-1.el7.x86_64.rpm colordiff-1.0.13-2.el7.noarch.rpm ccze-0.2.1-11.el7.x86_64.rpm; do
+    for pkg in git-review-1.24-5.el7.noarch.rpm reptyr-0.5-1.el7.x86_64.rpm colordiff-1.0.13-2.el7.noarch.rpm ccze-0.2.1-11.el7.x86_64.rpm emacs-yaml-mode-0.0.12-2.el7.noarch.rpm; do
 	l=$(echo $pkg | cut -c-1)
 	curl https://dl.fedoraproject.org/pub/epel/7/x86_64/$l/$pkg > pkgs/$pkg
     done
@@ -47,3 +47,5 @@ fi
 # vim-minimal-7.4.160-1.el7_3.1.x86_64.rpm
 # vim-common-7.4.160-1.el7_3.1.x86_64.rpm
 # screen-4.1.0-0.23.20120314git3c2946.el7_2.x86_64.rpm
+
+# sudo yum install -y ftp://fr2.rpmfind.net/linux/epel/7/x86_64/e/emacs-yaml-mode-0.0.12-2.el7.noarch.rpm

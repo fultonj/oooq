@@ -39,8 +39,10 @@ if [ $IMG -eq 1 ]; then
 fi
 
 if [ $SCRIPTS -eq 1 ]; then
-    # make it easy to pull this repo to the underlcoud
-    ssh -F $SSH_ENV stack@undercloud "echo 'git clone git@github.com:fultonj/oooq.git ; ln   -s oooq/tht' >> sh_me"    
+    # make it easy to pull this repo and others to the underlcoud
+    ssh -F $SSH_ENV stack@undercloud "echo 'git clone git@github.com:fultonj/oooq.git ; ln   -s oooq/tht' >> sh_me"
+    ssh -F $SSH_ENV stack@undercloud "echo 'git clone git@github.com:fultonj/tripleo-ceph-ansible.git '>> sh_me"
+    ssh -F $SSH_ENV stack@undercloud "echo 'git clone https://github.com/yoshiki/yaml-mode.git '>> sh_me"
 fi
 
 if [ $LOCAL -eq 1 ]; then

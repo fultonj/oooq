@@ -22,7 +22,7 @@ if [ $CLONEQ -eq 1 ]; then
 fi    
 
 if [ $RUNQ -eq 1 ]; then
-    bash quickstart.sh -e supported_distro_check=false -e enable_vnc_console=true --teardown all --release ocata -e @myconfigfile.yml $VIRTHOST    
+    bash quickstart.sh -e supported_distro_check=false -e --teardown all --release master -e @myconfigfile.yml $VIRTHOST
 fi
 
 if [ $PKGS -eq 1 ]; then

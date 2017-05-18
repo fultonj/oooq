@@ -1,14 +1,15 @@
+undercloud_memory: 32768 # 12288
+undercloud_vcpu: 8 # 4
+
 overcloud_nodes:
   - name: control_0
     flavor: control
     virtualbmc_port: 6230
+    control_memory: 32768 # 8192
+    control_vcpu: 8 # 2
 
   - name: ceph_0
     flavor: ceph
     virtualbmc_port: 6231
-
-  # - name: ceph_0
-  #   flavor: oooq_ceph
-  #   virtualbmc_port: 6231
-  #   extradisks: true
-  # The above should create /dev/vd{a,b,c} in place of add-disks.sh
+    ceph_memory: 32768 # 8192
+    ceph_vcpu: 8 # 2

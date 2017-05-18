@@ -2,7 +2,7 @@
 # Filename:                master.sh
 # Description:             Sets up my dev env
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-03-02 13:31:09 jfulton> 
+# Time-stamp:              <2017-05-18 12:02:11 jfulton> 
 # -------------------------------------------------------
 CLONEQ=1
 RUNQ=1
@@ -16,13 +16,15 @@ export SSH_ENV=~/.quickstart/ssh.config.ansible
 export VIRTHOST=$(hostname)
 
 if [ $CLONEQ -eq 1 ]; then
+    rm -f quickstart.sh 
     rm -rf tripleo-quickstart/ 2> /dev/null
     git clone https://github.com/openstack/tripleo-quickstart
     ln -s tripleo-quickstart/quickstart.sh 
 fi    
 
 if [ $RUNQ -eq 1 ]; then
-    bash quickstart.sh -e supported_distro_check=false -e --teardown all --release master -e @myconfigfile.yml $VIRTHOST
+    bash quickstart.sh --install-deps
+    bash quickstart.sh -e supported_distro_check=false --teardown all --release master -e @myconfigfile.yml $VIRTHOST
 fi
 
 if [ $PKGS -eq 1 ]; then

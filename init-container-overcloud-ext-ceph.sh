@@ -31,7 +31,8 @@ if [ $CEPH_ANSIBLE -eq 1 ]; then
     curl https://raw.githubusercontent.com/fultonj/tripleo-ceph-ansible/master/group_vars/docker-all.yml > docker-all.yml
     mv docker-all.yml ~/ceph-ansible/group_vars/all.yml
     cp ~/ceph-ansible/site.yml.sample ~/ceph-ansible/site.yml
-     # see: https://github.com/ansible/ansible/issues/11536
+    # https://github.com/ceph/ceph-ansible/commit/2f3e15178b11814e696f61d190ec647319be7d78
+    
 fi
 
 if [ $POST_DEPLOY -eq 1 ]; then

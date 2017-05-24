@@ -28,16 +28,17 @@ if [ $CEPH_ANSIBLE -eq 1 ]; then
     curl https://raw.githubusercontent.com/fultonj/tripleo-ceph-ansible/master/install-ceph-ansible.sh > install-ceph-ansible.sh
     bash install-ceph-ansible.sh
     cp -r /usr/share/ceph-ansible/ ~/ceph-ansible/
-    curl https://raw.githubusercontent.com/fultonj/tripleo-ceph-ansible/master/group_vars/docker-all.yml > docker-all.yml
-    mv docker-all.yml ~/ceph-ansible/group_vars/all.yml
     cp ~/ceph-ansible/site.yml.sample ~/ceph-ansible/site.yml
-    # https://github.com/ceph/ceph-ansible/commit/2f3e15178b11814e696f61d190ec647319be7d78
-    
+    cp ~/oooq/ansible/all.yml ~/ceph-ansible/group_vars/all.yml
+
+    # need to do...
+    # - https://github.com/ceph/ceph-ansible/commit/2f3e15178b11814e696f61d190ec647319be7d78
+    # - $(git review -d 467665)
 fi
 
 if [ $POST_DEPLOY -eq 1 ]; then
     curl https://raw.githubusercontent.com/fultonj/tripleo-ceph-ansible/master/ansible-inventory.sh > ansible-inventory.sh
     bash ansible-inventory.sh
     ansible osds -b -m shell -a "for d in `echo /dev/vd{b,c,d}`; do sgdisk -Z \$d; sgdisk -g \$d; done; partprobe"
-    echo "cd ceph-ansbile; ansible-playbook site.yml.sample"
+    echo "cd ceph-ansbile; ansible-playbook site.yml"
 fi

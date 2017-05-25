@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-curl http://refarch.cloud.lab.eng.bos.redhat.com/pub/projects/rhos/liberty/scripts/hci/libvirt.pp > /tmp/libvirt.pp
-mv /tmp/libvirt.pp /etc/puppet/modules/tripleo/manifests/profile/base/nova/compute/libvirt.pp
+# workaround, add OS_AUTH_URL=https://192.168.24.2:13000/v3 to stackrc
+#curl http://refarch.cloud.lab.eng.bos.redhat.com/pub/projects/rhos/liberty/scripts/hci/libvirt.pp > /tmp/libvirt.pp
+#mv /tmp/libvirt.pp /etc/puppet/modules/tripleo/manifests/profile/base/nova/compute/libvirt.pp
 
 echo "Number of disks detected: $(lsblk -no NAME,TYPE,MOUNTPOINT | grep "disk" | awk '{print $1}' | wc -l)"
 for DEVICE in `lsblk -no NAME,TYPE,MOUNTPOINT | grep "disk" | awk '{print $1}'`

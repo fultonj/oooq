@@ -1,15 +1,40 @@
 undercloud_memory: 32768 # 12288
 undercloud_vcpu: 8 # 4
 
+control_memory: 8192 # 8192
+control_vcpu: 2 # 2
+
+compute_memory: 8192 # 8192
+compute_vcpu: 2 # 2
+
+ceph_memory: 8192 # 8192
+ceph_vcpu: 2 # 2
+
 overcloud_nodes:
   - name: control_0
     flavor: control
     virtualbmc_port: 6230
-    control_memory: 32768 # 8192
-    control_vcpu: 8 # 2
+
+  - name: control_1
+    flavor: control
+    virtualbmc_port: 6231
+
+  - name: control_2
+    flavor: control
+    virtualbmc_port: 6232
+
+  - name: compute_0
+    flavor: compute
+    virtualbmc_port: 6233
 
   - name: ceph_0
     flavor: ceph
-    virtualbmc_port: 6231
-    ceph_memory: 32768 # 8192
-    ceph_vcpu: 8 # 2
+    virtualbmc_port: 6234
+
+  - name: ceph_1
+    flavor: ceph
+    virtualbmc_port: 6235
+
+  - name: ceph_2
+    flavor: ceph
+    virtualbmc_port: 6236

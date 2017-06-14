@@ -43,7 +43,7 @@
 declare -a repos=(
       'openstack/tripleo-common'\
       'openstack/tripleo-heat-templates'\
-      'openstack/tripleo-docs'\
+      #'openstack/tripleo-docs'\
       'openstack/puppet-ceph'\
       'openstack/puppet-tripleo'\
       #'openstack/puppet-openstack-integration'\

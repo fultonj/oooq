@@ -45,12 +45,12 @@ if [ $SCRIPTS -eq 1 ]; then
     ssh -F $SSH_ENV stack@undercloud "echo 'git clone git@github.com:fultonj/oooq.git ; ln   -s oooq/tht' >> sh_me"
     ssh -F $SSH_ENV stack@undercloud "echo 'git clone git@github.com:fultonj/tripleo-ceph-ansible.git '>> sh_me"
     ssh -F $SSH_ENV stack@undercloud "echo 'git clone https://github.com/yoshiki/yaml-mode.git '>> sh_me"
+    # set default to source stackrc
+    ssh -F $SSH_ENV stack@undercloud "echo 'source /home/stack/stackrc' >> ~/.bashrc"
 fi
 
 if [ $LOCAL -eq 1 ]; then
-    # set default to source stackrc
-    ssh -F $SSH_ENV stack@undercloud "echo 'source /home/stack/stackrc' >> ~/.bashrc"
-
+    # this is only for when I develop on my laptop
     if [ -f ~/.ssh/id_rsa.pub ]; then
 	# install my personal key on undercloud using key provided by quickstart
 	scp -F $SSH_ENV cat ~/.ssh/id_rsa.pub stack@undercloud:/home/stack/

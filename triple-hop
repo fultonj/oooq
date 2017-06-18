@@ -1,0 +1,8 @@
+#!/usr/bin/expect -f 
+spawn ssh -t -A stack@10.19.139.49
+expect "\[stack@hci-director ~\]\$"
+send "ssh -t -A ooo@192.168.1.253\r"
+expect "\[ooo@hci-dev ~\]\$"
+send "~/oooq/under\r"
+interact
+

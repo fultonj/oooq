@@ -1,0 +1,6 @@
+#!/usr/bin/expect -f 
+spawn ssh -t -A ooo@10.19.139.48
+expect "\[ooo@hci-float11 ~\]\$"
+send "~/oooq/under\r"
+interact
+

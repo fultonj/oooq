@@ -50,29 +50,32 @@ declare -a repos=(
       #'openstack-infra/tripleo-ci'\
       # add the next repo here
 );
+export IM_JOHN=0
 # The first item must be tripleo-common.
 # All repos will be put in ~ except any containing
 # the string "puppet", which will be in ~/puppet-modules
 # -------------------------------------------------------
-gerrit_user='fultonj'
-git config --global user.email "fulton@redhat.com"
-git config --global user.name "John Fulton"
-git config --global push.default simple
-git config --global gitreview.username $gerrit_user
-# -------------------------------------------------------
-git review --version
-if [ $? -gt 0 ]; then
-    # assume we are not using epel but want git review
-    echo "installing git-review from upstream"
-    dir=/tmp/$(date | md5sum | awk {'print $1'})
-    mkdir $dir
-    pushd $dir
-    pkg=git-review-1.24-5.el7.noarch.rpm
-    curl -O https://dl.fedoraproject.org/pub/epel/7/x86_64/g/$pkg
-    sudo yum localinstall $pkg -y 
-    popd 
-    rm -rf $dir
-fi 
+if [ ${IM_JOHN} -gt 0 ]
+then
+    gerrit_user='fultonj'
+    git config --global user.email "fulton@redhat.com"
+    git config --global user.name "John Fulton"
+    git config --global push.default simple
+    git config --global gitreview.username $gerrit_user
+    # -------------------------------------------------------
+    git review --version
+    if [ $? -gt 0 ]; then
+       # assume we are not using epel but want git review
+        echo "installing git-review from upstream"
+        dir=`mktemp -d`
+        pushd $dir
+        pkg=git-review-1.24-5.el7.noarch.rpm
+        curl -O https://dl.fedoraproject.org/pub/epel/7/x86_64/g/$pkg
+        sudo yum localinstall $pkg -y 
+        popd 
+        rm -rf $dir
+    fi 
+fi
 # -------------------------------------------------------
 if [ ! -d ~/puppet-modules ]; then
     mkdir ~/puppet-modules
@@ -94,13 +97,16 @@ for repo in "${repos[@]}"; do
 	if [ $remove_file_count -gt 0 ]; then
 	    # rename it to drop the "puppet-" xor it works for non-puppet too
 	    git clone $url $dir
-	    if [ -d $dir ]; then
-		pushd $dir
-		git remote add gerrit ssh://$gerrit_user@review.openstack.org:29418/$repo.git
-		git review -s
-		popd
-	    else
-		echo "directory $dir not found"
+            if [ ${IM_JOHN} -gt 0 ]
+            then
+	        if [ -d $dir ]; then
+		    pushd $dir
+		    git remote add gerrit ssh://$gerrit_user@review.openstack.org:29418/$repo.git
+		    git review -s
+		    popd
+	        else
+		    echo "directory $dir not found"
+	        fi
 	    fi
 	else
 	    echo "no results from:  \"git ls-remote $url\""

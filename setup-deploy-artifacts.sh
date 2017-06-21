@@ -2,7 +2,7 @@
 # Filename:                setup-deploy-artifacts.sh
 # Description:             sets up dev env
 # Supported Langauge(s):   GNU Bash 4.2.x
-# Time-stamp:              <2017-02-24 13:59:14 jfulton>
+# Time-stamp:              <2017-06-19 12:58:59 jfulton>
 # -------------------------------------------------------
 # This is a quick shell script to set up what's desc in: 
 # http://hardysteven.blogspot.com/2016/08/tripleo-deploy-artifacts-and-puppet.html
@@ -50,13 +50,14 @@ declare -a repos=(
       #'openstack-infra/tripleo-ci'\
       # add the next repo here
 );
-export IM_JOHN=0
+export DEVELOPING=0
 # The first item must be tripleo-common.
 # All repos will be put in ~ except any containing
 # the string "puppet", which will be in ~/puppet-modules
 # -------------------------------------------------------
-if [ ${IM_JOHN} -gt 0 ]
+if [ ${DEVELOPING} -gt 0 ]
 then
+    # update gerrit_user, email and name below if you use this
     gerrit_user='fultonj'
     git config --global user.email "fulton@redhat.com"
     git config --global user.name "John Fulton"
@@ -97,7 +98,7 @@ for repo in "${repos[@]}"; do
 	if [ $remove_file_count -gt 0 ]; then
 	    # rename it to drop the "puppet-" xor it works for non-puppet too
 	    git clone $url $dir
-            if [ ${IM_JOHN} -gt 0 ]
+            if [ ${DEVELOPING} -gt 0 ]
             then
 	        if [ -d $dir ]; then
 		    pushd $dir

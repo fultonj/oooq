@@ -6,7 +6,7 @@
 # -------------------------------------------------------
 CLONEQ=1
 RUNQ=1
-PKGS=0
+PKGS=1
 DISK=0
 IMG=0
 SCRIPTS=1
@@ -28,7 +28,13 @@ if [ $RUNQ -eq 1 ]; then
 fi
 
 if [ $PKGS -eq 1 ]; then
-    bash pkgs.sh
+    # bash pkgs.sh
+    if [ -d pkgs ]; then
+	scp -r -F $SSH_ENV pkgs stack@undercloud:/home/stack/pkg	
+	ssh -F $SSH_ENV stack@undercloud "pushd ~/pkgs ; sudo yum localinstall *.rpm -y ; popd" 
+    else
+	echo "no local pkgs directory to install on undercloud"
+    fi
 fi
 
 if [ $DISK -eq 1 ]; then

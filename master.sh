@@ -6,7 +6,7 @@
 # -------------------------------------------------------
 CLONEQ=1
 RUNQ=1
-PKGS=1
+PKGS=0
 DISK=0
 IMG=0
 SCRIPTS=1
@@ -24,7 +24,7 @@ fi
 
 if [ $RUNQ -eq 1 ]; then
     bash quickstart.sh --install-deps
-    bash quickstart.sh -e supported_distro_check=false --teardown all --release master-tripleo-ci -e @myconfigfile.yml $VIRTHOST
+    bash quickstart.sh -e supported_distro_check=false --clean --teardown all --release master-tripleo-ci -e @myconfigfile.yml -c undercloud-conf.yaml $VIRTHOST
 fi
 
 if [ $PKGS -eq 1 ]; then

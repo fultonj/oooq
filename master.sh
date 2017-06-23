@@ -2,14 +2,14 @@
 # Filename:                master.sh
 # Description:             Sets up my dev env
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-05-18 12:02:11 jfulton> 
+# Time-stamp:              <2017-06-23 09:58:14 jfulton> 
 # -------------------------------------------------------
-CLONEQ=1
-RUNQ=1
+CLONEQ=0
+RUNQ=0
 PKGS=1
 DISK=0
 IMG=0
-SCRIPTS=1
+SCRIPTS=0
 LOCAL=0
 # -------------------------------------------------------
 export SSH_ENV=~/.quickstart/ssh.config.ansible
@@ -25,13 +25,15 @@ fi
 if [ $RUNQ -eq 1 ]; then
     bash quickstart.sh --install-deps
     bash quickstart.sh -e supported_distro_check=false --clean --teardown all --release master-tripleo-ci -e @myconfigfile.yml -c undercloud-conf.yaml $VIRTHOST
+    
 fi
 
 if [ $PKGS -eq 1 ]; then
     # bash pkgs.sh
     if [ -d pkgs ]; then
-	scp -r -F $SSH_ENV pkgs stack@undercloud:/home/stack/pkg	
-	ssh -F $SSH_ENV stack@undercloud "pushd ~/pkgs ; sudo yum localinstall *.rpm -y ; popd" 
+	scp -r -F $SSH_ENV pkgs stack@undercloud:/home/stack/pkgs
+	ssh -F $SSH_ENV stack@undercloud "pushd ~/pkgs ; sudo yum localinstall *.rpm -y ; popd"
+	ssh -F $SSH_ENV stack@undercloud "sudo yum install -y emacs-nox vim screen"
     else
 	echo "no local pkgs directory to install on undercloud"
     fi

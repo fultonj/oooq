@@ -2,7 +2,7 @@
 # Filename:                setup-deploy-artifacts.sh
 # Description:             sets up dev env
 # Supported Langauge(s):   GNU Bash 4.2.x
-# Time-stamp:              <2017-06-19 12:58:59 jfulton>
+# Time-stamp:              <2017-06-30 11:48:57 jfulton>
 # -------------------------------------------------------
 # This is a quick shell script to set up what's desc in: 
 # http://hardysteven.blogspot.com/2016/08/tripleo-deploy-artifacts-and-puppet.html
@@ -44,8 +44,8 @@ declare -a repos=(
       'openstack/tripleo-common'\
       'openstack/tripleo-heat-templates'\
       #'openstack/tripleo-docs'\
-      'openstack/puppet-ceph'\
-      'openstack/puppet-tripleo'\
+      #'openstack/puppet-ceph'\
+      #'openstack/puppet-tripleo'\
       #'openstack/puppet-openstack-integration'\
       #'openstack-infra/tripleo-ci'\
       # add the next repo here

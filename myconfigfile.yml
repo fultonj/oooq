@@ -38,3 +38,11 @@ overcloud_nodes:
   - name: ceph_2
     flavor: ceph
     virtualbmc_port: 6236
+
+  - name: mds_0
+    flavor: compute
+    virtualbmc_port: 6237
+
+  - name: rgw_0
+    flavor: compute
+    virtualbmc_port: 6238

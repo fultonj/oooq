@@ -10,6 +10,8 @@ compute_vcpu: 2 # 2
 ceph_memory: 8192 # 8192
 ceph_vcpu: 2 # 2
 
+extradisks_size: 7G
+
 overcloud_nodes:
   - name: control_0
     flavor: control

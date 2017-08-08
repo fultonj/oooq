@@ -4,12 +4,12 @@
 # Supported Langauge(s):   GNU Bash 4.3.x
 # Time-stamp:              <2017-06-23 09:58:14 jfulton> 
 # -------------------------------------------------------
-CLONEQ=0
-RUNQ=0
+CLONEQ=1
+RUNQ=1
 PKGS=1
 DISK=0
 IMG=0
-SCRIPTS=0
+SCRIPTS=1
 LOCAL=0
 # -------------------------------------------------------
 export SSH_ENV=~/.quickstart/ssh.config.ansible
@@ -23,8 +23,10 @@ if [ $CLONEQ -eq 1 ]; then
 fi    
 
 if [ $RUNQ -eq 1 ]; then
+    #release=master-tripleo-ci
+    release=ocata
     bash quickstart.sh --install-deps
-    bash quickstart.sh -e supported_distro_check=false --clean --teardown all --release master-tripleo-ci -e @myconfigfile.yml -c undercloud-conf.yaml $VIRTHOST
+    bash quickstart.sh -e supported_distro_check=false --clean --teardown all --release $release -e @myconfigfile.yml -c undercloud-conf.yaml $VIRTHOST
     
 fi
 

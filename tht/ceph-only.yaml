@@ -8,10 +8,12 @@ parameter_defaults:
   CephStorageServices:
     - OS::TripleO::Services::CephOSD
 
-  ControllerSchedulerHints:
-    'capabilities:node': 'controller-%index%'
-  CephStorageSchedulerHints:
-    'capabilities:node': 'ceph-storage-%index%'
+  OvercloudControlFlavor: control
+  ControllerCount: 1
+  OvercloudComputeFlavor: compute
+  ComputeCount: 0
+  OvercloudCephStorageFlavor: ceph-storage
+  CephStorageCount: 3
 
   CephStorageExtraConfig:
     ceph::profile::params::osds:

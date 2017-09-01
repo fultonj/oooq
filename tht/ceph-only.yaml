@@ -16,6 +16,7 @@ parameter_defaults:
   CephStorageCount: 3
 
   CephStorageExtraConfig:
+    ceph::profile::params::osd_journal_size: 256
     ceph::profile::params::osds:
       '/dev/vdb':
         journal: '/dev/vdd'

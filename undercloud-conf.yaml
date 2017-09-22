@@ -1,2 +1,3 @@
 undercloud_generate_service_certificate: false
 undercloud_undercloud_nameservers: 10.19.143.247
+update_iamges: true

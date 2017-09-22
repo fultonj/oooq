@@ -12,22 +12,28 @@ IMG=0
 SCRIPTS=1
 LOCAL=0
 # -------------------------------------------------------
-export SSH_ENV=~/.quickstart/ssh.config.ansible
 export VIRTHOST=$(hostname)
 
 if [ $CLONEQ -eq 1 ]; then
     rm -f quickstart.sh 
     rm -rf tripleo-quickstart/ 2> /dev/null
-    git clone https://github.com/openstack/tripleo-quickstart
+    # https://review.openstack.org/#/c/504820/
+    if [ -d ~/tripleo-quickstart ]; then
+	echo "Using quickstart found in ~ (hopefully from a recent setup-deploy-aritfacts.sh?)"
+	ln -s ~/tripleo-quickstart 
+    else
+	echo "Cloning quickstart from github"
+	git clone https://github.com/openstack/tripleo-quickstart
+    fi
     ln -s tripleo-quickstart/quickstart.sh 
 fi    
 
 if [ $RUNQ -eq 1 ]; then
-    #release=master-tripleo-ci
-    release=ocata
+    #release=ocata
+    release=master-tripleo-ci
+    sudo rm -rf ~/.quickstart
     bash quickstart.sh --install-deps
     bash quickstart.sh -e supported_distro_check=false --clean --teardown all --release $release -e @myconfigfile.yml -c undercloud-conf.yaml $VIRTHOST
-    
 fi
 
 if [ $PKGS -eq 1 ]; then

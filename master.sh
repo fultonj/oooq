@@ -4,8 +4,8 @@
 # Supported Langauge(s):   GNU Bash 4.3.x
 # Time-stamp:              <2017-06-23 09:58:14 jfulton> 
 # -------------------------------------------------------
-CLONEQ=1
-RUNQ=1
+CLONEQ=0
+RUNQ=0
 PKGS=1
 DISK=0
 IMG=0
@@ -34,6 +34,10 @@ if [ $RUNQ -eq 1 ]; then
     sudo rm -rf ~/.quickstart
     bash quickstart.sh --install-deps
     bash quickstart.sh -e supported_distro_check=false --clean --teardown all --release $release -e @myconfigfile.yml -c undercloud-conf.yaml $VIRTHOST
+fi
+
+if [ -d ~/.quickstart/ ]; then
+    export SSH_ENV=~/.quickstart/ssh.config.ansible
 fi
 
 if [ $PKGS -eq 1 ]; then

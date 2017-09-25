@@ -4,8 +4,8 @@
 # Supported Langauge(s):   GNU Bash 4.3.x
 # Time-stamp:              <2017-06-23 09:58:14 jfulton> 
 # -------------------------------------------------------
-CLONEQ=0
-RUNQ=0
+CLONEQ=1
+RUNQ=1
 PKGS=1
 DISK=0
 IMG=0

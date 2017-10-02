@@ -2,14 +2,14 @@
 # Filename:                triple-tunnel.sh
 # Description:             Set up SSH tunnel to undercloud 
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-10-02 08:29:03 jfulton> 
+# Time-stamp:              <2017-10-02 08:42:55 jfulton> 
 # -------------------------------------------------------
 # I have a remote hypervisor running VMs for quickstart
 # I can only access that hypervisor via a bridge server
 # Set up an SSH tunnel via the bridge to the hypervisor
 # Set up second SSH tunnel via the first to the undercloud
 # For use with emacs tramp:
-# (setenv "triple-hop" "/ssh:stack@localhost#3333:/home/stack/")
+# (setenv "tunnel3" "/ssh:stack@localhost#3333:/home/stack/")
 # -------------------------------------------------------
 bridge=10.19.139.49
 hypervisor=192.168.1.253

@@ -2,7 +2,7 @@
 # Filename:                master.sh
 # Description:             Sets up my dev env
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-10-08 10:55:25 jfulton> 
+# Time-stamp:              <2017-10-08 10:57:44 jfulton> 
 # -------------------------------------------------------
 CLONEQ=1
 RUNQ=1
@@ -74,6 +74,7 @@ if [ $SCRIPTS -eq 1 ]; then
     ssh -F $SSH_ENV stack@undercloud "echo 'git clone https://github.com/yoshiki/yaml-mode.git '>> sh_me"
     # set default to source stackrc
     ssh -F $SSH_ENV stack@undercloud "echo 'source /home/stack/stackrc' >> ~/.bashrc"
+    ssh -F $SSH_ENV stack@undercloud "echo 'alias os=openstack' >> ~/.bashrc"    
 fi
 
 if [ $LOCAL -eq 1 ]; then

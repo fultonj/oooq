@@ -2,7 +2,7 @@
 # Filename:                master.sh
 # Description:             Sets up my dev env
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-06-23 09:58:14 jfulton> 
+# Time-stamp:              <2017-10-08 10:55:25 jfulton> 
 # -------------------------------------------------------
 CLONEQ=1
 RUNQ=1
@@ -13,6 +13,10 @@ SCRIPTS=1
 LOCAL=0
 # -------------------------------------------------------
 export VIRTHOST=$(hostname)
+
+echo "Testing virthost connection"
+ssh root@$VIRTHOST uname -a || (echo "ssh connection to virthost not ready" && exit 1)
+# https://docs.openstack.org/tripleo-quickstart/latest/readme.html#tripleo-quickstart
 
 if [ $CLONEQ -eq 1 ]; then
     rm -f quickstart.sh 
@@ -29,11 +33,14 @@ if [ $CLONEQ -eq 1 ]; then
 fi    
 
 if [ $RUNQ -eq 1 ]; then
-    #release=ocata
     release=master-tripleo-ci
+    #release=pike
+    #release=ocata
     sudo rm -rf ~/.quickstart
     bash quickstart.sh --install-deps
-    bash quickstart.sh -e supported_distro_check=false --clean --teardown all --release $release -e @myconfigfile.yml -c undercloud-conf.yaml $VIRTHOST
+    teardown=all
+    #teardown=nodes
+    bash quickstart.sh --teardown $teardown --release $release -e @myconfigfile.yml -c undercloud-conf.yaml $VIRTHOST
 fi
 
 if [ -d ~/.quickstart/ ]; then

@@ -39,10 +39,36 @@ overcloud_nodes:
     flavor: ceph
     virtualbmc_port: 6236
 
-  - name: mds_0
-    flavor: compute
-    virtualbmc_port: 6237
+topology: >-
+  --control-scale 1
+  --compute-scale 1
+  --ceph-storage-scale 1
 
-  - name: rgw_0
-    flavor: compute
-    virtualbmc_port: 6238
+extra_args: >-
+  --libvirt-type qemu
+  -e /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-ansible.yaml
+
+undercloud_enable_telemetry: false
+undercloud_enable_ui: false
+
+extradisks_list:
+  - vdb
+  - vdc
+  - vdd
+  - vde
+  - vdf
+  - vdg
+  - vdh
+  - vdi
+  - vdl
+  - vdm
+  - vdn
+  - vdo
+  - vdp
+  - vdq
+  - vdr
+  - vds
+  - vdt
+  - vdu
+  - vdv
+  - vdz

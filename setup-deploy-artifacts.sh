@@ -2,7 +2,7 @@
 # Filename:                setup-deploy-artifacts.sh
 # Description:             sets up dev env
 # Supported Langauge(s):   GNU Bash 4.2.x
-# Time-stamp:              <2017-06-30 11:48:57 jfulton>
+# Time-stamp:              <2017-11-21 16:18:37 fultonj>
 # -------------------------------------------------------
 # This is a quick shell script to set up what's desc in: 
 # http://hardysteven.blogspot.com/2016/08/tripleo-deploy-artifacts-and-puppet.html
@@ -50,7 +50,7 @@ declare -a repos=(
       #'openstack-infra/tripleo-ci'\
       # add the next repo here
 );
-export DEVELOPING=0
+export DEVELOPING=1
 # The first item must be tripleo-common.
 # All repos will be put in ~ except any containing
 # the string "puppet", which will be in ~/puppet-modules
@@ -70,12 +70,17 @@ then
         echo "installing git-review from upstream"
         dir=`mktemp -d`
         pushd $dir
-        pkg=git-review-1.24-5.el7.noarch.rpm
-        curl -O https://dl.fedoraproject.org/pub/epel/7/x86_64/g/$pkg
+	pkg=git-review-1.24-5.el7.noarch.rpm
+	curl -O https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/g/$pkg
         sudo yum localinstall $pkg -y 
         popd 
         rm -rf $dir
-    fi 
+    fi
+    git review --version
+    if [ $? -gt 0 ]; then
+	echo "git review installatoin failed. exiting."
+	exit 1
+    fi
 fi
 # -------------------------------------------------------
 if [ ! -d ~/puppet-modules ]; then

@@ -4,12 +4,12 @@
 # Supported Langauge(s):   GNU Bash 4.3.x
 # Time-stamp:              <2017-10-08 10:57:44 jfulton> 
 # -------------------------------------------------------
-CLONEQ=1
+SCRIPT=1
 RUNQ=1
-PKGS=1
+PKGS=0
 DISK=0
 IMG=0
-SCRIPTS=1
+SCRIPTS=0
 LOCAL=0
 # -------------------------------------------------------
 export VIRTHOST=$(hostname)
@@ -18,26 +18,18 @@ echo "Testing virthost connection"
 ssh root@$VIRTHOST uname -a || (echo "ssh connection to virthost not ready" && exit 1)
 # https://docs.openstack.org/tripleo-quickstart/latest/readme.html#tripleo-quickstart
 
-if [ $CLONEQ -eq 1 ]; then
-    rm -f quickstart.sh 
-    rm -rf tripleo-quickstart/ 2> /dev/null
-    # https://review.openstack.org/#/c/504820/
-    if [ -d ~/tripleo-quickstart ]; then
-	echo "Using quickstart found in ~ (hopefully from a recent setup-deploy-aritfacts.sh?)"
-	ln -s ~/tripleo-quickstart 
-    else
-	echo "Cloning quickstart from github"
-	git clone https://github.com/openstack/tripleo-quickstart
-    fi
-    ln -s tripleo-quickstart/quickstart.sh 
-fi    
+if [ $SCRIPT -eq 1 ]; then
+    url=https://raw.githubusercontent.com/openstack/tripleo-quickstart/master/quickstart.sh
+    curl $url > quickstart.sh
+fi
 
 if [ $RUNQ -eq 1 ]; then
+    sudo rm -rf ~/.quickstart
+    bash quickstart.sh --install-deps
+
     release=master-tripleo-ci
     #release=pike
     #release=ocata
-    sudo rm -rf ~/.quickstart
-    bash quickstart.sh --install-deps
     teardown=all
     #teardown=nodes
     bash quickstart.sh --teardown $teardown --release $release --skip-tags tripleoui-validate -e @myconfigfile.yml -c undercloud-conf.yaml $VIRTHOST

@@ -40,7 +40,7 @@ if [ $RUNQ -eq 1 ]; then
     bash quickstart.sh --install-deps
     teardown=all
     #teardown=nodes
-    bash quickstart.sh --teardown $teardown --release $release -e @myconfigfile.yml -c undercloud-conf.yaml $VIRTHOST
+    bash quickstart.sh --teardown $teardown --release $release --skip-tags tripleoui-validate -e @myconfigfile.yml -c undercloud-conf.yaml $VIRTHOST
 fi
 
 if [ -d ~/.quickstart/ ]; then

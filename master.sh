@@ -6,10 +6,10 @@
 # -------------------------------------------------------
 SCRIPT=1
 RUNQ=1
-PKGS=0
+PKGS=1
 DISK=0
 IMG=0
-SCRIPTS=0
+SCRIPTS=1
 LOCAL=0
 # -------------------------------------------------------
 export VIRTHOST=$(hostname)

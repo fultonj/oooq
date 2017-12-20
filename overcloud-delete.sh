@@ -36,3 +36,12 @@ done
 
 echo "Re-checking on node cleaning"
 openstack baremetal node list | grep clean 
+
+echo "Checking for uncleaned swift container"
+if [[ $(grep OS_AUTH_URL ~/stackrc | grep v3) ]]; then
+    echo "Removing overcloud-swift-rings (assuming bug not yet resolved)"
+    swift delete overcloud-swift-rings
+else
+    echo "Unable to authenticate to swift add 'v3' to end of the following:"
+    grep OS_AUTH_URL ~/stackrc | grep -v export
+fi

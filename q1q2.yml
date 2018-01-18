@@ -1,0 +1,58 @@
+undercloud_memory: 12288  # 12288
+undercloud_vcpu: 12 # 4
+
+control_memory: 8192 # 8192
+control_vcpu: 8 # 2
+
+compute_memory: 2048 # 8192
+compute_vcpu: 2 # 2
+
+ceph_memory: 8192 # 8192
+ceph_vcpu: 8 # 2
+
+overcloud_nodes:
+  - name: control_0
+    flavor: control
+    virtualbmc_port: 6230
+
+  - name: compute_0
+    flavor: compute
+    virtualbmc_port: 6231
+
+  - name: ceph_0
+    flavor: ceph
+    virtualbmc_port: 6232
+
+topology: >-
+  --control-scale 1
+  --compute-scale 0
+  --ceph-storage-scale 1
+
+extra_args: >-
+  --libvirt-type qemu
+  -e /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-ansible.yaml
+
+undercloud_enable_telemetry: false
+undercloud_enable_ui: false
+
+extradisks_list:
+  - vdb
+  - vdc
+  - vdd
+  - vde
+  - vdf
+  - vdg
+  - vdh
+  - vdi
+  - vdl
+  - vdm
+  - vdn
+  - vdo
+  - vdp
+  - vdq
+  - vdr
+  - vds
+  - vdt
+  - vdu
+  - vdv
+  - vdz

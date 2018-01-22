@@ -2,7 +2,7 @@
 # Filename:                pkgs.sh
 # Description:             installs packages on undercloud
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-01-20 18:01:37 jfulton> 
+# Time-stamp:              <2018-01-22 10:03:17 fultonj> 
 # -------------------------------------------------------
 DOWNLOAD=1
 INSTALL_EPEL=1
@@ -31,7 +31,7 @@ if [ $INSTALL_EPEL -eq 1 ]; then
 fi
 
 if [ $INSTALL_CENT -eq 1 ]; then
-    ssh -F $SSH_ENV stack@undercloud "sudo yum install screen emacs-nox vim -y" 
+    ssh -F $SSH_ENV stack@undercloud "sudo yum install tmux screen emacs-nox vim -y" 
 fi
 
 # -------------------------------------------------------

@@ -11,5 +11,8 @@ time openstack overcloud deploy \
 	  -e ~/templates/environments/low-memory-usage.yaml \
 	  -e ~/templates/environments/disable-telemetry.yaml \
 	  -e ~/templates/environments/docker.yaml \
+	  -e ~/templates/environments/ceph-ansible/ceph-ansible-external.yaml \
           -e ~/docker_registry.yaml \
-	  -e ~/tht/ctlplane-assignments.yaml
+	  -e ~/tht/ctlplane-assignments.yaml \
+	  -e ~/tht/ceph-external.yaml
+

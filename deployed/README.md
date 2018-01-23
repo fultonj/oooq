@@ -33,4 +33,4 @@ Over
 
 - Run [init.sh](init.sh) from undercloud to test connection, enable repository and generate tht for the deployment
 - Run [deploy.sh](deploy.sh) from undercloud to start deployment
-- run [poll.sh](poll.sh) from undercloud to ask overcloud to poll undercloud; otherwise the deployment will fail.
+- Run [poll.sh](poll.sh) from undercloud to ask overcloud to poll undercloud; otherwise the deployment will fail.

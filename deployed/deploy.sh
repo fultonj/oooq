@@ -2,13 +2,14 @@
 source ~/stackrc 
 echo "Use poll.sh after the deployment starts"
 
-openstack overcloud deploy \
+time openstack overcloud deploy \
 	  --templates ~/templates \
 	  --disable-validations \
 	  -r ~/tht/roles_data.yaml \
 	  -e ~/templates/environments/deployed-server-environment.yaml \
 	  -e ~/templates/environments/deployed-server-bootstrap-environment-centos.yaml \
-	  -e ~/tht/ctlplane-assignments.yaml \
-          -e ~/docker_registry.yaml
-
-# -e ~/templates/environments/deployed-server-pacemaker-environment.yaml \
+	  -e ~/templates/environments/low-memory-usage.yaml \
+	  -e ~/templates/environments/disable-telemetry.yaml \
+	  -e ~/templates/environments/docker.yaml \
+          -e ~/docker_registry.yaml \
+	  -e ~/tht/ctlplane-assignments.yaml

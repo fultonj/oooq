@@ -1,0 +1,13 @@
+resource_registry:
+  OS::TripleO::DeployedServer::ControlPlanePort: /usr/share/openstack-tripleo-heat-templates/deployed-server/deployed-neutron-port.yaml
+
+parameter_defaults:
+  DeployedServerPortMap:
+    over-ctlplane:
+      fixed_ips:
+        - ip_address: 192.168.2.2
+      subnets:
+        - cidr: 24
+  NeutronPublicInterface: ens9
+  ControlPlaneDefaultRoute: 192.168.2.1
+  EC2MetadataIp: 192.168.2.1

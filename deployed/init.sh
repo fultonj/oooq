@@ -1,12 +1,12 @@
 # Filename:                init.sh
 # Description:             Initialize undercloud for deploy
-# Time-stamp:              <2018-01-23 16:09:29 fultonj> 
+# Time-stamp:              <2018-01-23 19:00:03 fultonj> 
 # -------------------------------------------------------
-CONNECTION=0
-REPO=0
-THT=0
-ROLES=0
-CONTAINERS=0
+CONNECTION=1
+REPO=1
+THT=1
+ROLES=1
+CONTAINERS=1
 # -------------------------------------------------------
 OVER=192.168.2.2
 under=$(ip a s br-ctlplane | grep 192 | awk {'print $2'} | sed s/\\/24//g)
@@ -23,10 +23,18 @@ source ~/stackrc
 ssh $OVER -l stack "hostname" || (echo "No ssh for stack@over; exiting."; exit 1)
 # -------------------------------------------------------
 if [ $CONNECTION -eq 1 ]; then
-    # Can overcloud reach undercloud Heat API and Swift Server?
+    echo  "Can overcloud reach undercloud Heat API and Swift Server?"
     ssh $OVER -l stack "curl -s 192.168.2.1:8000" | jq .  # should return json
     ssh $OVER -l stack "curl -s 192.168.2.1:8080" # should 404
-    echo ""
+    echo "404 above is expcted ^"
+    echo "overcloud default route should be 192.168.2.1 ..."
+    ssh $OVER -l stack "/sbin/ip route | grep default"
+    echo "If necessary, fix with fix with..."
+    echo "ip route add default via 192.168.2.1"
+    #ssh $OVER -l stack "echo GATEWAY='192.168.2.1' > /tmp/etc-sysconfig-network"
+    #ssh $OVER -l stack "mv /tmp/etc-sysconfig-network /etc/sysconfig/network"
+    #ssh $OVER -l stack "sudo /sbin/ip route add default via 192.168.2.1"
+    #ssh $OVER -l stack "/sbin/ip route"
 fi
 # -------------------------------------------------------
 if [ $REPO -eq 1 ]; then

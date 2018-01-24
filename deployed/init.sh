@@ -1,6 +1,6 @@
 # Filename:                init.sh
 # Description:             Initialize undercloud for deploy
-# Time-stamp:              <2018-01-23 19:00:03 fultonj> 
+# Time-stamp:              <2018-01-23 20:51:52 fultonj> 
 # -------------------------------------------------------
 CONNECTION=1
 REPO=1
@@ -26,15 +26,18 @@ if [ $CONNECTION -eq 1 ]; then
     echo  "Can overcloud reach undercloud Heat API and Swift Server?"
     ssh $OVER -l stack "curl -s 192.168.2.1:8000" | jq .  # should return json
     ssh $OVER -l stack "curl -s 192.168.2.1:8080" # should 404
+    echo ""
     echo "404 above is expcted ^"
+    echo ""
     echo "overcloud default route should be 192.168.2.1 ..."
+    echo ""
     ssh $OVER -l stack "/sbin/ip route | grep default"
-    echo "If necessary, fix with fix with..."
-    echo "ip route add default via 192.168.2.1"
-    #ssh $OVER -l stack "echo GATEWAY='192.168.2.1' > /tmp/etc-sysconfig-network"
-    #ssh $OVER -l stack "mv /tmp/etc-sysconfig-network /etc/sysconfig/network"
-    #ssh $OVER -l stack "sudo /sbin/ip route add default via 192.168.2.1"
-    #ssh $OVER -l stack "/sbin/ip route"
+    # echo "If necessary, fix with fix with..."
+    # echo "ip route add default via 192.168.2.1"
+    # ssh $OVER -l stack "echo GATEWAY='192.168.2.1' > /tmp/etc-sysconfig-network"
+    # ssh $OVER -l stack "mv /tmp/etc-sysconfig-network /etc/sysconfig/network"
+    # ssh $OVER -l stack "sudo /sbin/ip route add default via 192.168.2.1"
+    # ssh $OVER -l stack "/sbin/ip route"
 fi
 # -------------------------------------------------------
 if [ $REPO -eq 1 ]; then
@@ -67,9 +70,10 @@ if [ $ROLES -eq 1 ]; then
 fi
 # -------------------------------------------------------
 if [ $CONTAINERS -eq 1 ]; then
+    tag="current-tripleo-rdo"
     openstack overcloud container image prepare \
-	--namespace tripleoupstream \
-	--tag latest \
+	--namespace trunk.registry.rdoproject.org/master \
+	--tag $tag \
 	--env-file ~/docker_registry.yaml
 fi
 # -------------------------------------------------------

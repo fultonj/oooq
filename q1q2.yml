@@ -1,11 +1,8 @@
-undercloud_memory: 12288  # 12288
-undercloud_vcpu: 12 # 4
+undercloud_memory: 13312  # 12288
+undercloud_vcpu: 14 # 4
 
-control_memory: 8192 # 8192
+control_memory: 9216 # 8192
 control_vcpu: 8 # 2
-
-compute_memory: 2048 # 8192
-compute_vcpu: 2 # 2
 
 ceph_memory: 8192 # 8192
 ceph_vcpu: 8 # 2
@@ -15,13 +12,9 @@ overcloud_nodes:
     flavor: control
     virtualbmc_port: 6230
 
-  - name: compute_0
-    flavor: compute
-    virtualbmc_port: 6231
-
   - name: ceph_0
     flavor: ceph
-    virtualbmc_port: 6232
+    virtualbmc_port: 6231
 
 topology: >-
   --control-scale 1
@@ -44,15 +37,3 @@ extradisks_list:
   - vdg
   - vdh
   - vdi
-  - vdl
-  - vdm
-  - vdn
-  - vdo
-  - vdp
-  - vdq
-  - vdr
-  - vds
-  - vdt
-  - vdu
-  - vdv
-  - vdz

@@ -21,23 +21,24 @@ ssh root@$VIRTHOST uname -a || (echo "ssh connection to virthost not ready" && e
 if [ $SCRIPT -eq 1 ]; then
     url=https://raw.githubusercontent.com/openstack/tripleo-quickstart/master/quickstart.sh
     curl $url > quickstart.sh
+    sudo rm -rf ~/.quickstart
+    bash quickstart.sh --install-deps
 fi
 
 if [ $RUNQ -eq 1 ]; then
-    sudo rm -rf ~/.quickstart
-    bash quickstart.sh --install-deps
-
     release=master-tripleo-ci
     #release=pike
     #release=ocata
     teardown=all
     #teardown=nodes
-    bash quickstart.sh --teardown $teardown --release $release --skip-tags tripleoui-validate -e @myconfigfile.yml -c undercloud-conf.yaml $VIRTHOST
+    bash quickstart.sh --teardown $teardown --release $release --skip-tags tripleoui-validate -e @q1q2.yml -c undercloud-conf.yaml $VIRTHOST
 fi
 
 if [ -d ~/.quickstart/ ]; then
     export SSH_ENV=~/.quickstart/ssh.config.ansible
 fi
+
+ssh -F $SSH_ENV stack@undercloud || (echo "No ssh for stack@undercloud; exiting."; exit 1)
 
 if [ $PKGS -eq 1 ]; then
     # bash pkgs.sh

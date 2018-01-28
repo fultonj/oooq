@@ -2,13 +2,13 @@
 # Filename:                master.sh
 # Description:             Sets up my dev env
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-10-08 10:57:44 jfulton> 
+# Time-stamp:              <2018-01-28 17:46:00 fultonj> 
 # -------------------------------------------------------
 SCRIPT=1
 RUNQ=1
 PKGS=1
 DISK=0
-IMG=0
+IMG=1
 SCRIPTS=1
 LOCAL=0
 # -------------------------------------------------------
@@ -57,6 +57,7 @@ if [ $DISK -eq 1 ]; then
 fi
 
 if [ $IMG -eq 1 ]; then
+    # use to avoid ssh hangs
     bash overcloud-image-tweak.sh
 fi
 

@@ -338,13 +338,20 @@ ip_version: ipv4
 
 # OSD
 devices:
-  - /dev/vdb      
+  - /dev/vdb
+  - /dev/vdc
+  - /dev/vdd
+  - /dev/vde
+  - /dev/vdf
+  - /dev/vdg
+  - /dev/vdh
+  - /dev/vdi
 osd_scenario: collocated
 osd_objectstore: filestore
 
 osd_pool_default_size: 1
-osd_pool_default_pg_num: 32
-osd_pool_default_pgp_num: 32
+osd_pool_default_pg_num: 128
+osd_pool_default_pgp_num: 128
 
 # xattrs. by default, 'filestore xattr use omap' is set to 'true' if
 # 'osd_mkfs_type' is set to 'ext4'; otherwise it isn't set. This can
@@ -461,6 +468,11 @@ osd_pool_default_pgp_num: 32
 #
 #ceph_conf_overrides: {}
 
+ceph_conf_overrides:
+  global:
+    mon_max_pg_per_osd: 928
+  mgr:
+    auth_client_required: cephx
 
 #############
 # OS TUNING #
@@ -499,12 +511,29 @@ osd_pool_default_pgp_num: 32
 #containerized_deployment: "{{ True if mon_containerized_deployment or osd_containerized_deployment or mds_containerized_deployment or rgw_containerized_deployment else False }}" # backward compatibility with stable-2.2, will disappear in stable 3.1
 
 # containers
-containerized_deployment: true
-docker: true
+containerized_deployment: false
+docker: false
 ceph_docker_registry: docker.io
 ceph_docker_image: ceph/daemon
-ceph_docker_image_tag: tag-stable-3.0-luminous-centos-7
+#ceph_docker_image_tag: tag-stable-3.0-luminous-centos-7
+ceph_docker_image_tag: latest
 ceph_docker_version: 1.12.6
+
+# ceph_mon_docker_memory_limit: 3g
+# ceph_mon_docker_cpu_limit: 2
+# ceph_mgr_docker_memory_limit: 3g
+# ceph_mgr_docker_cpu_limit: 1
+# ceph_osd_docker_memory_limit: 3g
+# ceph_osd_docker_cpu_limit: 2
+
+# openstack_pools:
+# - {name: backups, pg_num: 128, pgp_num: 128, rule_name: ''}	    
+# - {name: volumes, pg_num: 512, pgp_num: 512, rule_name: ''}
+# - {name: vms, pg_num: 128, pgp_num: 128, rule_name: ''}
+# - {name: images, pg_num: 64, pgp_num: 64, rule_name: ''}
+# - {name: metrics, pg_num: 32, pgp_num: 32, rule_name: ''}    
+# - {name: manila_data, pg_num: 32, pgp_num: 32, rule_name: ''}
+# - {name: manila_metadata, pg_num: 32, pgp_num: 32, rule_name: ''}
 
 ############
 # KV store #

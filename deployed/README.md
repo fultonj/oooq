@@ -19,7 +19,7 @@ Under
 -----
 
 - Undercloud as installed by following the [docs](https://docs.openstack.org/tripleo-docs/latest/install/installation/installation.html).
-- under and over have ens9 connected to bridge "exp" with IPs from 192.168.2.0/24
+- under and over have ens10 connected to bridge "exp" with IPs from 192.168.2.0/24
 - See [undercloud.conf](undercloud.conf).
 
 Ceph

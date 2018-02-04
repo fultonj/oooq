@@ -16,7 +16,7 @@ if [ $DOWNLOAD -eq 1 ]; then
     fi
     for pkg in git-review-1.24-5.el7.noarch.rpm reptyr-0.5-1.el7.x86_64.rpm colordiff-1.0.13-2.el7.noarch.rpm ccze-0.2.1-11.el7.x86_64.rpm emacs-yaml-mode-0.0.12-2.el7.noarch.rpm; do
 	l=$(echo $pkg | cut -c-1)
-	curl https://dl.fedoraproject.org/pub/epel/7/x86_64/$l/$pkg > pkgs/$pkg
+	curl https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/$l/$pkg > pkgs/$pkg
     done
 fi
 

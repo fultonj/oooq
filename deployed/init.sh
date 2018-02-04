@@ -1,12 +1,13 @@
 # Filename:                init.sh
 # Description:             Initialize undercloud for deploy
-# Time-stamp:              <2018-01-23 20:51:52 fultonj> 
+# Time-stamp:              <2018-02-04 16:38:15 fultonj> 
 # -------------------------------------------------------
 CONNECTION=1
 REPO=1
 THT=1
 ROLES=1
-CONTAINERS=1
+CONTAINERS_EXT=0
+CONTAINERS_LOC=1
 # -------------------------------------------------------
 OVER=192.168.2.2
 under=$(ip a s br-ctlplane | grep 192 | awk {'print $2'} | sed s/\\/24//g)
@@ -69,7 +70,7 @@ if [ $ROLES -eq 1 ]; then
     #echo "  disable_constraints: True" >> ~/roles_data.yaml
 fi
 # -------------------------------------------------------
-if [ $CONTAINERS -eq 1 ]; then
+if [ $CONTAINERS_EXT -eq 1 ]; then
     tag="current-tripleo-rdo"
     openstack overcloud container image prepare \
 	--namespace trunk.registry.rdoproject.org/master \
@@ -77,3 +78,24 @@ if [ $CONTAINERS -eq 1 ]; then
 	--env-file ~/docker_registry.yaml
 fi
 # -------------------------------------------------------
+if [ $CONTAINERS_LOC -eq 1 ]; then
+    tag="current-tripleo-rdo"
+    if [[ -f overcloud_containers.yaml ]] ; then
+	echo "uploading container registry based on overcloud_containers.yaml"
+	openstack overcloud container image upload --config-file overcloud_containers.yaml
+
+	echo "The following images are now in the local registry"
+	curl -s http://192.168.2.1:8787/v2/_catalog | jq "."
+
+	echo "Creating ~/docker_registry.yaml with references to local registry"
+	openstack overcloud container image prepare \
+              --namespace=192.168.2.1:8787/master \
+              --tag=$tag \
+              --set ceph_namespace=192.168.2.1:8787 \
+              --set ceph_image=ceph/daemon \
+              --set ceph_tag=tag-stable-3.0-luminous-centos-7 \
+              --env-file=/home/stack/docker_registry.yaml
+    else
+	echo "overcloud_containers.yaml is not in current directory"
+    fi
+fi

@@ -5,6 +5,7 @@ echo "Use poll.sh after the deployment starts"
 time openstack overcloud deploy \
 	  --templates ~/templates \
 	  --disable-validations \
+          --libvirt-type qemu \
 	  -r ~/tht/roles_data.yaml \
 	  -e ~/templates/environments/deployed-server-environment.yaml \
 	  -e ~/templates/environments/deployed-server-bootstrap-environment-centos.yaml \

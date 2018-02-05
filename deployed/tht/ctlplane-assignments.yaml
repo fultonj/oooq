@@ -8,6 +8,6 @@ parameter_defaults:
         - ip_address: 192.168.2.2
       subnets:
         - cidr: 24
-  NeutronPublicInterface: ens9
+  NeutronPublicInterface: ens10
   ControlPlaneDefaultRoute: 192.168.2.1
   EC2MetadataIp: 192.168.2.1

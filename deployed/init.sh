@@ -1,6 +1,6 @@
 # Filename:                init.sh
 # Description:             Initialize undercloud for deploy
-# Time-stamp:              <2018-02-05 09:53:12 fultonj> 
+# Time-stamp:              <2018-02-05 17:57:30 fultonj> 
 # -------------------------------------------------------
 CONNECTION=1
 REPO=1
@@ -84,10 +84,25 @@ if [ $CONTAINERS_LOC -eq 1 ]; then
     tag="current-tripleo-rdo"
     if [[ -f overcloud_containers.yaml ]] ; then
 	echo "uploading container registry based on overcloud_containers.yaml"
-	sudo openstack overcloud container image upload --config-file overcloud_containers.yaml
-
+	sudo openstack overcloud container image upload --config-file overcloud_containers.yaml --verbose
+	echo $?
+	echo "Note the error code above ^ (is it not 0?)"
+	
 	echo "The following images are now in the local registry"
 	curl -s http://192.168.2.1:8787/v2/_catalog | jq "."
+
+	attempted=$(cat overcloud_containers.yaml | grep -v container_images | wc -l)
+	uploaded=$(curl -s http://192.168.2.1:8787/v2/_catalog | jq "." | egrep "master|ceph" | wc -l)
+	echo "Of the $attempted docker images, only $uploaded were uploaded"
+	echo "Look for a pattern of the ones that did not make it in the following: "
+	
+	for l in $(cat overcloud_containers.yaml | awk {'print $3'} | awk 'BEGIN { FS="/" } { print $3 }' | sed s/:current-tripleo-rdo//g ); do
+	    echo $l
+	    curl -s http://192.168.2.1:8787/v2/_catalog | jq "." | grep -n $l ;
+	done	
+
+	echo "Considering re-running 'openstack overcloud container image upload' if missing iamges are necessary"
+	echo ""
 	
 	echo "Creating ~/docker_registry.yaml with references to local registry"
 	openstack overcloud container image prepare \

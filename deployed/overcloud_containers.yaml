@@ -1,5 +1,6 @@
 container_images:
 - imagename: docker.io/ceph/daemon:tag-stable-3.0-luminous-centos-7
+- imagename: trunk.registry.rdoproject.org/master/centos-binary-keepalived:tripleo-ci-testing
 - imagename: trunk.registry.rdoproject.org/master/centos-binary-aodh-api:current-tripleo-rdo
 - imagename: trunk.registry.rdoproject.org/master/centos-binary-aodh-evaluator:current-tripleo-rdo
 - imagename: trunk.registry.rdoproject.org/master/centos-binary-aodh-listener:current-tripleo-rdo
@@ -36,7 +37,6 @@ container_images:
 - imagename: trunk.registry.rdoproject.org/master/centos-binary-ironic-inspector:current-tripleo-rdo
 - imagename: trunk.registry.rdoproject.org/master/centos-binary-ironic-pxe:current-tripleo-rdo
 - imagename: trunk.registry.rdoproject.org/master/centos-binary-iscsid:current-tripleo-rdo
-- imagename: trunk.registry.rdoproject.org/master/centos-binary-keepalived:current-tripleo-rdo
 - imagename: trunk.registry.rdoproject.org/master/centos-binary-keystone:current-tripleo-rdo
 - imagename: trunk.registry.rdoproject.org/master/centos-binary-manila-api:current-tripleo-rdo
 - imagename: trunk.registry.rdoproject.org/master/centos-binary-manila-base:current-tripleo-rdo

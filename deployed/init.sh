@@ -1,6 +1,6 @@
 # Filename:                init.sh
 # Description:             Initialize undercloud for deploy
-# Time-stamp:              <2018-02-04 16:38:15 fultonj> 
+# Time-stamp:              <2018-02-05 09:25:21 fultonj> 
 # -------------------------------------------------------
 CONNECTION=1
 REPO=1
@@ -82,11 +82,11 @@ if [ $CONTAINERS_LOC -eq 1 ]; then
     tag="current-tripleo-rdo"
     if [[ -f overcloud_containers.yaml ]] ; then
 	echo "uploading container registry based on overcloud_containers.yaml"
-	openstack overcloud container image upload --config-file overcloud_containers.yaml
+	sudo openstack overcloud container image upload --config-file overcloud_containers.yaml
 
 	echo "The following images are now in the local registry"
 	curl -s http://192.168.2.1:8787/v2/_catalog | jq "."
-
+	
 	echo "Creating ~/docker_registry.yaml with references to local registry"
 	openstack overcloud container image prepare \
               --namespace=192.168.2.1:8787/master \
@@ -95,6 +95,13 @@ if [ $CONTAINERS_LOC -eq 1 ]; then
               --set ceph_image=ceph/daemon \
               --set ceph_tag=tag-stable-3.0-luminous-centos-7 \
               --env-file=/home/stack/docker_registry.yaml
+
+	echo "Workaround missing current-tripleo-rdo for centos-binary-keepalived"
+	grep keepalived /home/stack/docker_registry.yaml
+	sed -i s/centos-binary-keepalived:current-tripleo-rdo/centos-binary-keepalived:tripleo-ci-testing/g /home/stack/docker_registry.yaml
+
+	echo "~/docker_registry.yaml has had the following centos-binary-keepalived update"
+	grep keepalived /home/stack/docker_registry.yaml
     else
 	echo "overcloud_containers.yaml is not in current directory"
     fi

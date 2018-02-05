@@ -1,6 +1,6 @@
 # Filename:                init.sh
 # Description:             Initialize undercloud for deploy
-# Time-stamp:              <2018-02-05 09:25:21 fultonj> 
+# Time-stamp:              <2018-02-05 09:53:12 fultonj> 
 # -------------------------------------------------------
 CONNECTION=1
 REPO=1
@@ -53,6 +53,8 @@ fi
 if [ $THT -eq 1 ]; then
     ln -s /usr/share/openstack-tripleo-heat-templates ~/templates
     ln -s ~/oooq/deployed/tht ~/tht
+    ln -s oooq/deployed/deploy.sh
+    ln -s oooq/deployed/poll.sh
 fi
 # -------------------------------------------------------
 if [ $ROLES -eq 1 ]; then

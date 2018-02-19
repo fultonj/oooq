@@ -2,7 +2,7 @@
 # Filename:                setup-deploy-artifacts.sh
 # Description:             sets up dev env
 # Supported Langauge(s):   GNU Bash 4.2.x
-# Time-stamp:              <2017-11-21 16:18:37 fultonj>
+# Time-stamp:              <2018-02-19 09:10:54 fultonj>
 # -------------------------------------------------------
 # This is a quick shell script to set up what's desc in: 
 # http://hardysteven.blogspot.com/2016/08/tripleo-deploy-artifacts-and-puppet.html
@@ -61,6 +61,7 @@ then
     gerrit_user='fultonj'
     git config --global user.email "fulton@redhat.com"
     git config --global user.name "John Fulton"
+    git config --global core.editor "emacs"
     git config --global push.default simple
     git config --global gitreview.username $gerrit_user
     # -------------------------------------------------------

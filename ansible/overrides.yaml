@@ -1,0 +1,2 @@
+parameter_defaults:
+  NtpServer: 10.5.26.10

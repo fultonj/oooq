@@ -20,9 +20,9 @@ if [[ $HEAT -eq 1 ]]; then
 fi
 # -------------------------------------------------------
 if [ -z "$1" ]; then
-    name=$(date +%a-%I%M%p)
+    NAME=$(date +%a-%I%M%p)
 else
-    name=$1
+    NAME=$1
 fi
 # -------------------------------------------------------
 if [[ $CONF -eq 1 ]]; then
@@ -33,9 +33,9 @@ if [[ $CONF -eq 1 ]]; then
     else
 	target=tripleo-config-download/$(ls -tr tripleo-config-download | tail -1)
 	ln -s $target $NAME
-	tripleo-ansible-inventory --static-yaml-inventory $name/inventory.yaml
-	ansible -i $name/inventory.yaml all -m ping
-	echo "pushd $name"
+	tripleo-ansible-inventory --static-yaml-inventory $NAME/inventory.yaml
+	ansible -i $NAME/inventory.yaml all -m ping
+	echo "pushd $NAME"
 	echo 'ansible -i inventory.yaml all -m shell -b -a "hostname"'
     fi
 fi
@@ -46,6 +46,6 @@ if [[ $PLAY -eq 1 ]]; then
 	 -v \
 	 --ssh-extra-args "-o StrictHostKeyChecking=no" --timeout 240 \
 	 --become \
-	 -i $name/inventory.yaml \
-	 $name/deploy_steps_playbook.yaml
+	 -i $NAME/inventory.yaml \
+	 $NAME/deploy_steps_playbook.yaml
 fi

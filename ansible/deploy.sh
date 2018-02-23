@@ -7,9 +7,12 @@ PLAY=1
 source ~/stackrc
 
 if [[ $HEAT -eq 1 ]]; then
-    # 15 minutes do deploy baremetal and generate config data
+    # 13 minutes to deploy baremetal and generate config data
     time openstack overcloud deploy \
 	 --templates ~/templates/ \
+	 -e ~/templates/environments/docker.yaml \
+	 -e ~/templates/environments/docker-ha.yaml \
+	 -e ~/docker_registry.yaml \
 	 -e ~/templates/environments/low-memory-usage.yaml \
 	 -e ~/templates/environments/disable-telemetry.yaml \
 	 -e ~/templates/environments/config-download-environment.yaml \
@@ -41,11 +44,13 @@ if [[ $CONF -eq 1 ]]; then
 fi
 # -------------------------------------------------------
 if [[ $PLAY -eq 1 ]]; then
-    # ? minutes to configure overcloud
+    # 18 minutes to configure _minimal_ overcloud
     time ansible-playbook \
 	 -v \
 	 --ssh-extra-args "-o StrictHostKeyChecking=no" --timeout 240 \
 	 --become \
 	 -i $NAME/inventory.yaml \
 	 $NAME/deploy_steps_playbook.yaml
+    #  "$@"
+   
 fi

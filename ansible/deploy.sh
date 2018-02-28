@@ -2,12 +2,13 @@
 
 HEAT=1
 CONF=1
-PLAY=0
+PLAY=1
 
 source ~/stackrc
 
 if [[ $HEAT -eq 1 ]]; then
     # 13 minutes to deploy baremetal and generate config data
+    # ./ironic-assign.sh ceph ceph-storage
     time openstack overcloud deploy \
 	 --templates ~/templates/ \
 	 --libvirt-type qemu \

@@ -2,7 +2,7 @@
 
 HEAT=1
 CONF=1
-PLAY=1
+PLAY=0
 
 source ~/stackrc
 
@@ -10,12 +10,14 @@ if [[ $HEAT -eq 1 ]]; then
     # 13 minutes to deploy baremetal and generate config data
     time openstack overcloud deploy \
 	 --templates ~/templates/ \
+	 --libvirt-type qemu \
 	 -e ~/templates/environments/docker.yaml \
 	 -e ~/templates/environments/docker-ha.yaml \
 	 -e ~/docker_registry.yaml \
 	 -e ~/templates/environments/low-memory-usage.yaml \
 	 -e ~/templates/environments/disable-telemetry.yaml \
 	 -e ~/templates/environments/config-download-environment.yaml \
+	 -e ~/templates/environments/ceph-ansible/ceph-ansible.yaml \
 	 -e ./overrides.yaml
 
     # Add the following to the above to make CONF/PLAY unnecessary
@@ -30,6 +32,10 @@ fi
 # -------------------------------------------------------
 if [[ $CONF -eq 1 ]]; then
     # 1 minute to download config data
+    if [[ $(openstack stack list | grep overcloud | wc -l) -eq 0 ]]; then
+	echo "No overcloud heat stack. Exiting"
+	exit 1
+    fi
     tripleo-config-download
     if [[ ! -d tripleo-config-download ]]; then
 	echo "tripleo-config-download cmd didn't create tripleo-config-download dir"

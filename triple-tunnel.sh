@@ -2,7 +2,7 @@
 # Filename:                triple-tunnel.sh
 # Description:             Set up SSH tunnel to undercloud 
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2017-12-13 14:17:43 fultonj> 
+# Time-stamp:              <2018-03-03 16:51:30 fultonj> 
 # -------------------------------------------------------
 # I have a remote hypervisor running VMs for quickstart
 # I can only access that hypervisor via a bridge server
@@ -25,9 +25,14 @@ ssh -f -L 3332:$hypervisor:22 -N stack@$bridge
 echo "Access hypervisor with: ooo@localhost -p 3332"
 ssh -A ooo@localhost -p 3332 "uname -a"
 # determine undercloud IP
-cmd="grep ProxyCommand .quickstart/ssh.config.ansible | tail -1  | awk {'print \$13'}"
+cmd="grep ProxyCommand .quickstart/ssh.config.ansible | tail -1  | awk {'print \$14'}"
 undercloud_port=$(ssh ooo@localhost -p 3332 $cmd) # e.g. 1.2.3.4:22
+echo "port: $undercloud_port"
 ssh -A -f -L 3333:$undercloud_port -N ooo@localhost -p 3332
+if [[ $? -gt 0 ]]; then
+    echo "Unable to setup second tunnel"
+    exit 1
+fi
 echo "Access undercloud with: ssh stack@localhost -p 3333"
 ssh stack@localhost -p 3333 "uname -a"
 

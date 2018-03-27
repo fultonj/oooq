@@ -30,7 +30,7 @@ if [[ -f overcloud_containers.yaml ]] ; then
               --tag=$tag \
               --set ceph_namespace=192.168.24.1:8787 \
               --set ceph_image=ceph/daemon \
-              --set ceph_tag=tag-stable-3.0-luminous-centos-7 \
+              --set ceph_tag=v3.0.1-stable-3.0-luminous-centos-7-x86_64 \
               --env-file=/home/stack/docker_registry.yaml
 
     echo "Workaround missing current-tripleo-rdo for centos-binary-keepalived"

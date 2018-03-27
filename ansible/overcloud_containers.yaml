@@ -1,5 +1,5 @@
 container_images:
-- imagename: docker.io/ceph/daemon:tag-stable-3.0-luminous-centos-7
+- imagename: docker.io/ceph/daemon:v3.0.1-stable-3.0-luminous-centos-7-x86_64
 - imagename: trunk.registry.rdoproject.org/master/centos-binary-keepalived:tripleo-ci-testing
 - imagename: trunk.registry.rdoproject.org/master/centos-binary-aodh-api:current-tripleo-rdo
 - imagename: trunk.registry.rdoproject.org/master/centos-binary-aodh-evaluator:current-tripleo-rdo

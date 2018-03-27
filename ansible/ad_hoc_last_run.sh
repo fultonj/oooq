@@ -10,7 +10,7 @@
 # ./ansible-playbook-command.sh --list-tags
 # -------------------------------------------------------
 name=$(date +%a-%I%M%p)
-target=/var/lib/mistral/$(ls -tr /var/lib/mistral/ | tail -1)
+target=/var/lib/mistral/$(sudo ls -tr /var/lib/mistral/ | tail -1)
 if [[ $(id stack | grep mistral | wc -l) -eq 0 ]]; then
     sudo usermod -a -G mistral stack
 fi

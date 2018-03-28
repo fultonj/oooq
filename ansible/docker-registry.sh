@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 source ~/stackrc
 
+LOCAL=1
+
+if [[ $LOCAL -eq 0 ]]; then
+    openstack overcloud container image prepare --output-env-file docker_registry.yaml
+    exit 0
+fi
+
 tag="current-tripleo-rdo"
 if [[ -f overcloud_containers.yaml ]] ; then
     echo "uploading container registry based on overcloud_containers.yaml"

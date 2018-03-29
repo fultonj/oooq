@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 source ~/stackrc
 
-LOCAL=1
+LOCAL=0
 
 if [[ $LOCAL -eq 0 ]]; then
-    openstack overcloud container image prepare --output-env-file docker_registry.yaml
+    openstack overcloud container image prepare --output-env-file ~/docker_registry.yaml
     exit 0
 fi
 

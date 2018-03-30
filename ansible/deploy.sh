@@ -25,6 +25,12 @@ if [[ $HEAT -eq 1 ]]; then
     #   --config-download
 fi
 # -------------------------------------------------------
+status=CREATE_FAILED
+if [[ $(openstack stack list | grep $status | wc -l) -eq 1 ]]; then
+    echo "Stack status is $status ... Aborting."
+    exit 1
+fi
+# -------------------------------------------------------
 if [ -z "$1" ]; then
     NAME=$(date +%a-%I%M%p)
 else
@@ -44,11 +50,16 @@ if [[ $CONF -eq 1 ]]; then
 	target=tripleo-config-download/$(ls -tr tripleo-config-download | tail -1)
 	ln -s $target $NAME
 	tripleo-ansible-inventory --static-yaml-inventory $NAME/inventory.yaml
-	ansible -i $NAME/inventory.yaml all -m ping
+	ansible --ssh-extra-args "-o StrictHostKeyChecking=no" -i $NAME/inventory.yaml all -m ping
 	echo "pushd $NAME"
 	echo 'ansible -i inventory.yaml all -m shell -b -a "hostname"'
     fi
 fi
+# -------------------------------------------------------
+echo "sleeping 60 seconds"
+date
+sleep 60
+date
 # -------------------------------------------------------
 if [[ $PLAY -eq 1 ]]; then
     # 18 minutes to configure _minimal_ overcloud

@@ -19,6 +19,7 @@ if [[ $HEAT -eq 1 ]]; then
 	 -e ~/templates/environments/disable-telemetry.yaml \
 	 -e ~/templates/environments/config-download-environment.yaml \
 	 -e ~/templates/environments/ceph-ansible/ceph-ansible.yaml \
+	 -e ~/templates/environments/disable-workflow-tasks.yaml \
 	 -e ./overrides.yaml
 
     # Add the following to the above to make CONF/PLAY unnecessary
@@ -55,11 +56,6 @@ if [[ $CONF -eq 1 ]]; then
 	echo 'ansible -i inventory.yaml all -m shell -b -a "hostname"'
     fi
 fi
-# -------------------------------------------------------
-echo "sleeping 60 seconds"
-date
-sleep 60
-date
 # -------------------------------------------------------
 if [[ $PLAY -eq 1 ]]; then
     # 18 minutes to configure _minimal_ overcloud

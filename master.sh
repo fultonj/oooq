@@ -2,9 +2,10 @@
 # Filename:                master.sh
 # Description:             Sets up my dev env
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2018-01-28 17:46:00 fultonj> 
+# Time-stamp:              <2018-04-27 15:02:36 fultonj> 
 # -------------------------------------------------------
 SCRIPT=1
+FEDORA=0
 RUNQ=1
 PKGS=1
 DISK=0
@@ -25,13 +26,23 @@ if [ $SCRIPT -eq 1 ]; then
     bash quickstart.sh --install-deps
 fi
 
+if [ $FEDORA -eq 1 ]; then
+    # if [[ $(grep Fedora /etc/redhat-release) ]]; then
+    echo "Workarounds are required for Fedora..."
+    echo "Comment out this task: https://bit.ly/2I3ZEUG"
+
+    echo "Ensure undercloud can ssh into hypervisor for virtual BMC"
+    sudo firewall-cmd --add-rich-rule='rule family="ipv4" source address="192.168.23.0/24" port port="22" protocol="tcp" accept'
+    sudo firewall-cmd --list-all-zones  | grep -A 15 active
+fi
+
 if [ $RUNQ -eq 1 ]; then
     release=master-tripleo-ci
     #release=pike
     #release=ocata
     teardown=all
     #teardown=nodes
-    bash quickstart.sh --teardown $teardown --release $release --skip-tags tripleoui-validate -e @q1q2.yml -c undercloud-conf.yaml $VIRTHOST
+    bash quickstart.sh -e supported_distro_check=false --teardown $teardown --release $release --skip-tags tripleoui-validate -e @q1q2.yml -c undercloud-conf.yaml $VIRTHOST
 fi
 
 if [ -d ~/.quickstart/ ]; then

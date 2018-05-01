@@ -17,25 +17,17 @@ if [[ $HEAT -eq 1 ]]; then
 	 -e ~/docker_registry.yaml \
 	 -e ~/templates/environments/low-memory-usage.yaml \
 	 -e ~/templates/environments/disable-telemetry.yaml \
-	 -e ~/templates/environments/config-download-environment.yaml \
 	 -e ~/templates/environments/ceph-ansible/ceph-ansible.yaml \
-	 -e ~/templates/environments/disable-workflow-tasks.yaml \
-	 -e ./overrides.yaml
+	 -e ./overrides.yaml \
+	 --no-config-download
 
-    # Add the following to the above to make CONF/PLAY unnecessary
-    #   --config-download
+    # remove --no-config-download to make CONF and PLAY unnecessary
 fi
 # -------------------------------------------------------
 status=CREATE_FAILED
 if [[ $(openstack stack list | grep $status | wc -l) -eq 1 ]]; then
     echo "Stack status is $status ... Aborting."
     exit 1
-fi
-# -------------------------------------------------------
-if [ -z "$1" ]; then
-    NAME=$(date +%a-%I%M%p)
-else
-    NAME=$1
 fi
 # -------------------------------------------------------
 if [[ $CONF -eq 1 ]]; then
@@ -48,23 +40,24 @@ if [[ $CONF -eq 1 ]]; then
     if [[ ! -d tripleo-config-download ]]; then
 	echo "tripleo-config-download cmd didn't create tripleo-config-download dir"
     else
-	target=tripleo-config-download/$(ls -tr tripleo-config-download | tail -1)
-	ln -s $target $NAME
-	tripleo-ansible-inventory --static-yaml-inventory $NAME/inventory.yaml
-	ansible --ssh-extra-args "-o StrictHostKeyChecking=no" -i $NAME/inventory.yaml all -m ping
-	echo "pushd $NAME"
+	pushd tripleo-config-download
+	tripleo-ansible-inventory --static-yaml-inventory inventory.yaml
+	ansible --ssh-extra-args "-o StrictHostKeyChecking=no" -i inventory.yaml all -m ping
+	popd	
+	echo "pushd $tripleo-config-download"
 	echo 'ansible -i inventory.yaml all -m shell -b -a "hostname"'
     fi
 fi
 # -------------------------------------------------------
 if [[ $PLAY -eq 1 ]]; then
     # 18 minutes to configure _minimal_ overcloud
+    # 45 minutes for 6 node overcloud w/ ceph
     time ansible-playbook \
 	 -v \
 	 --ssh-extra-args "-o StrictHostKeyChecking=no" --timeout 240 \
 	 --become \
-	 -i $NAME/inventory.yaml \
-	 $NAME/deploy_steps_playbook.yaml
+	 -i tripleo-config-download/inventory.yaml \
+	 tripleo-config-download/deploy_steps_playbook.yaml
     #  "$@"
    
 fi

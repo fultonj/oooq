@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-OVERALL=0
+OVERALL=1
 MDS=0
-CINDER=0
-GLANCE=0
+CINDER=1
+GLANCE=1
 NOVA=1
 
 function run_on_mon {

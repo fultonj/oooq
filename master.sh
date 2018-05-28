@@ -2,7 +2,7 @@
 # Filename:                master.sh
 # Description:             Sets up my dev env
 # Supported Langauge(s):   GNU Bash 4.3.x
-# Time-stamp:              <2018-04-27 15:02:36 fultonj> 
+# Time-stamp:              <2018-05-28 13:27:58 fultonj> 
 # -------------------------------------------------------
 SCRIPT=1
 FEDORA=0
@@ -38,18 +38,19 @@ fi
 
 if [ $RUNQ -eq 1 ]; then
     release=master-tripleo-ci
+    #release=queens
     #release=pike
     #release=ocata
     teardown=all
     #teardown=nodes
-    bash quickstart.sh -e supported_distro_check=false --teardown $teardown --release $release --skip-tags tripleoui-validate -e @q1q2.yml -c undercloud-conf.yaml $VIRTHOST
+    bash quickstart.sh -e supported_distro_check=false --teardown $teardown --release $release --skip-tags tripleoui-validate -e @myconfigfile.yml -c undercloud-conf.yaml $VIRTHOST
 fi
 
 if [ -d ~/.quickstart/ ]; then
     export SSH_ENV=~/.quickstart/ssh.config.ansible
 fi
 
-ssh -F $SSH_ENV stack@undercloud || (echo "No ssh for stack@undercloud; exiting."; exit 1)
+ssh -F $SSH_ENV stack@undercloud "uname -a; logout" || (echo "No ssh for stack@undercloud; exiting."; exit 1)
 
 if [ $PKGS -eq 1 ]; then
     # bash pkgs.sh

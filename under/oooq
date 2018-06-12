@@ -1,6 +1,6 @@
 # Filename:                oooq.sh
 # Description:             Help me connect to oooq hosts
-# Time-stamp:              <2018-05-17 16:41:52 fultonj> 
+# Time-stamp:              <2018-06-12 18:23:27 fultonj> 
 # -------------------------------------------------------
 # I have 2 centos systems hosting tripleo-quickstart:
 # - fultonj@hamfast
@@ -47,7 +47,7 @@ function ssh_under() {
     echo '#!/usr/bin/expect -f' >> /tmp/expect
     echo "spawn ssh -t -A $user@$hypervisor" >> /tmp/expect
     echo "expect \"\[$user@$host ~\]\$\"" >> /tmp/expect
-    echo 'send "~/oooq/under\r"' >> /tmp/expect
+    echo 'send "~/oooq/under/under\r"' >> /tmp/expect
     echo 'interact' >> /tmp/expect
     chmod 700 /tmp/expect
     /tmp/expect

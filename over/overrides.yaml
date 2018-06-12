@@ -1,11 +1,11 @@
 parameter_defaults:
-  NtpServer: 10.5.26.10
-  OvercloudControlFlavor: control
+  NtpServer: pool.ntp.org
+  OvercloudControlFlavor: oooq_control
   ControllerCount: 3
-  OvercloudComputeFlavor: compute
+  OvercloudComputeFlavor: oooq_compute
   ComputeCount: 1
-  OvercloudCephStorageFlavor: ceph-storage
-  CephStorageCount: 2
+  OvercloudCephStorageFlavor: oooq_ceph
+  CephStorageCount: 3
   
   CephAnsiblePlaybookVerbosity: 1
   CephAnsibleEnvironmentVariables:

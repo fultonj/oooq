@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # -------------------------------------------------------
-WORKAROUND=0
-NEW_OOOQ=0
-RUNQ=0
-PKGS=0
+WORKAROUND=1
+NEW_OOOQ=1
+RUNQ=1
+PKGS=1
 SCRIPTS=1
 VALIDATE=0
 RELEASE=master-tripleo-ci

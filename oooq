@@ -1,11 +1,10 @@
 # Filename:                oooq.sh
 # Description:             Help me connect to oooq hosts
-# Time-stamp:              <2018-01-19 14:35:53 fultonj> 
+# Time-stamp:              <2018-05-17 16:41:52 fultonj> 
 # -------------------------------------------------------
-# I have N centos systems hosting tripleo-quickstart:
-# - fultonj@ceph-osp1.cloud.lab.eng.bos.redhat.com
-# - fultonj@ceph-osp2.cloud.lab.eng.bos.redhat.com
-# - jfulton@192.168.1.50
+# I have 2 centos systems hosting tripleo-quickstart:
+# - fultonj@hamfast
+# - jfulton@orthanc
 # This script helps me do the following with them:
 # - ssh into their hypervisors
 # - ssh into their undercloud (hosted on the hypervisors)
@@ -17,15 +16,10 @@ if [ "$1" != "" ]; then
     case "$1" in
 	"1")
 	    user=fultonj
-	    hypervisor=ceph-osp1.cloud.lab.eng.bos.redhat.com
+	    hypervisor=hamfast
 	    port=4444
 	    ;;
 	"2")
-	    user=fultonj
-	    hypervisor=ceph-osp2.cloud.lab.eng.bos.redhat.com
-	    port=5555
-	    ;;
-	"3")
 	    user=jfulton
 	    hypervisor=192.168.1.50
 	    port=2222
@@ -38,9 +32,8 @@ if [ "$1" != "" ]; then
     host=$(echo $hypervisor | awk 'BEGIN { FS = "." } ; { print $1 }')
 else
     echo "You must specify the number of the host you want to connect to:"
-    echo "  1 -> osp1"
-    echo "  2 -> osp2"
-    echo "  3 -> orthanc"
+    echo "  1 -> hamfast"
+    echo "  2 -> orthanc"
     exit 1
 fi
 
@@ -72,10 +65,11 @@ function tunnel() {
 	cmd=$i$opt
 	sed -i $cmd ~/.ssh/known_hosts
     done
-    cmd="grep ProxyCommand .quickstart/ssh.config.ansible | tail -1  | awk {'print \$13'}"
+    cmd="grep ProxyCommand .quickstart/ssh.config.ansible | tail -1  | awk {'print \$14'}"
     undercloud_port=$(ssh $user@$hypervisor $cmd) # e.g. 1.2.3.4:22
     echo 
     echo "Tunneling from localhost:$port to undercloud:22 via $hypervisor"
+    echo "ssh -f -L $port:$undercloud_port -N $hypervisor -l $user"
     ssh -f -L $port:$undercloud_port -N $hypervisor -l $user
     echo " ssh stack@localhost -p $port"
 }

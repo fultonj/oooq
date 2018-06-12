@@ -71,7 +71,8 @@ if [ $PKGS -eq 1 ]; then
 fi
 # -------------------------------------------------------
 if [ $SCRIPTS -eq 1 ]; then
-    ssh -F $SSH_ENV stack@undercloud "echo 'ssh-keyscan github.com >> ~/.ssh/known_hosts' > sh_me"
+    ssh -F $SSH_ENV stack@undercloud "echo 'curl https://github.com/fultonj.keys >> ~/.ssh/authorized_keys' >> sh_me"
+    ssh -F $SSH_ENV stack@undercloud "echo 'ssh-keyscan github.com >> ~/.ssh/known_hosts' >> sh_me"
     ssh -F $SSH_ENV stack@undercloud "echo 'git clone git@github.com:fultonj/oooq.git' >> sh_me"
     ssh -F $SSH_ENV stack@undercloud "echo 'ln -s ~/oooq/over/deploy.sh' >> sh_me"
     ssh -F $SSH_ENV stack@undercloud "echo 'ln -s ~/oooq/over/overrides.yaml' >> sh_me"

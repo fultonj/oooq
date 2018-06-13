@@ -3,14 +3,14 @@
 OVERALL=1
 MDS=0
 CINDER=1
-GLANCE=1
-NOVA=1
+GLANCE=0
+NOVA=0
 
 function run_on_mon {
-    ansible -i tripleo-config-download/inventory.yaml overcloud-controller-0 -b -m shell -a "docker exec ceph-mon-overcloud-controller-0 $1"
+    ansible -i ~/tripleo-config-download/inventory.yaml overcloud-controller-0 -b -m shell -a "docker exec ceph-mon-overcloud-controller-0 $1"
 }
 
-source overcloudrc.v3
+source ~/overcloudrc.v3
 
 if [ $OVERALL -eq 1 ]; then
     # echo " --------- docker ps --------- "

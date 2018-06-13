@@ -84,7 +84,7 @@ if [ $VALIDATE -eq 1 ]; then
     bash quickstart.sh \
 	 --teardown none \
 	 --retain-inventory \
-	 --tags 'overcloud-validate'
+	 --tags 'overcloud-validate' \
 	 --release $RELEASE \
 	 --nodes nodes.yaml \
 	 --config config.yaml \

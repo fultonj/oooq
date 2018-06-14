@@ -12,6 +12,7 @@ telemetry_args: >-
 
 extra_args: >-
   --ntp-server pool.ntp.org
+  - {{ overcloud_templates_path }}/environments/ceph-ansible/ceph-ansible.yaml
 test_ping: true
 modify_image_vc_verbose: true
 modify_image_vc_root_password: abc123

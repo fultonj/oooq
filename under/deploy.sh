@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # -------------------------------------------------------
-WORKAROUND=0
-NEW_OOOQ=0
-RUNQ=0
-PKGS=0
+WORKAROUND=1
+NEW_OOOQ=1
+RUNQ=1
+PKGS=1
 SCRIPTS=1
 VALIDATE=0
 RELEASE=master-tripleo-ci
@@ -71,7 +71,8 @@ if [ $PKGS -eq 1 ]; then
 fi
 # -------------------------------------------------------
 if [ $SCRIPTS -eq 1 ]; then
-    ssh -F $SSH_ENV stack@undercloud "echo 'ssh-keyscan github.com >> ~/.ssh/known_hosts' > sh_me"
+    ssh -F $SSH_ENV stack@undercloud "echo 'curl https://github.com/fultonj.keys >> ~/.ssh/authorized_keys' >> sh_me"
+    ssh -F $SSH_ENV stack@undercloud "echo 'ssh-keyscan github.com >> ~/.ssh/known_hosts' >> sh_me"
     ssh -F $SSH_ENV stack@undercloud "echo 'git clone git@github.com:fultonj/oooq.git' >> sh_me"
     ssh -F $SSH_ENV stack@undercloud "echo 'ln -s ~/oooq/over/deploy.sh' >> sh_me"
     ssh -F $SSH_ENV stack@undercloud "echo 'ln -s ~/oooq/over/overrides.yaml' >> sh_me"
@@ -83,7 +84,7 @@ if [ $VALIDATE -eq 1 ]; then
     bash quickstart.sh \
 	 --teardown none \
 	 --retain-inventory \
-	 --tags 'overcloud-validate'
+	 --tags 'overcloud-validate' \
 	 --release $RELEASE \
 	 --nodes nodes.yaml \
 	 --config config.yaml \

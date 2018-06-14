@@ -6,7 +6,9 @@ parameter_defaults:
   ComputeCount: 1
   OvercloudCephStorageFlavor: oooq_ceph
   CephStorageCount: 3
-  
+  CephPoolDefaultSize: 1
+  CephPoolDefaultPgNum: 64
+
   CephAnsiblePlaybookVerbosity: 1
   CephAnsibleEnvironmentVariables:
     ANSIBLE_SSH_RETRIES: '6'

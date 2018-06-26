@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # -------------------------------------------------------
-WORKAROUND=1
+WORKAROUND=0
 NEW_OOOQ=1
 RUNQ=1
 PKGS=1
@@ -40,6 +40,11 @@ if [ $RUNQ -eq 1 ]; then
     	 --config config.yaml \
     	 $VIRTHOST
 
+    if [[ $? -gt 0 ]]; then
+	echo "ERROR: initial run of quickstart failed."
+	exit 1
+    fi
+    
     echo "generating network config as per LP173760"
     bash quickstart.sh \
 	 --teardown none \

@@ -33,8 +33,8 @@ if [[ $HEAT -eq 1 ]]; then
 fi
 # -------------------------------------------------------
 if [[ $DOWN -eq 1 ]]; then
-    if [[ $(openstack stack list | grep overcloud | wc -l) -eq 0 ]]; then
-	echo "No overcloud heat stack. Exiting"
+    if [[ $(openstack stack list | grep $STACK | wc -l) -eq 0 ]]; then
+	echo "No $STACK heat stack. Exiting"
 	exit 1
     fi
     tripleo-config-download --stack-name $STACK

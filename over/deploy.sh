@@ -4,6 +4,8 @@ HEAT=1
 DOWN=1
 CONF=1
 
+STACK=overcloud
+
 source ~/stackrc
 
 if [[ ! -d ~/templates ]]; then
@@ -13,6 +15,7 @@ fi
 if [[ $HEAT -eq 1 ]]; then
     time openstack overcloud deploy \
 	 --templates ~/templates/ \
+	 --stack $STACK
 	 --libvirt-type qemu \
 	 -e ~/cloud-names.yaml \
 	 -e ~/templates/environments/docker.yaml \
@@ -30,16 +33,16 @@ if [[ $HEAT -eq 1 ]]; then
 fi
 # -------------------------------------------------------
 if [[ $DOWN -eq 1 ]]; then
-    if [[ $(openstack stack list | grep overcloud | wc -l) -eq 0 ]]; then
-	echo "No overcloud heat stack. Exiting"
+    if [[ $(openstack stack list | grep $STACK | wc -l) -eq 0 ]]; then
+	echo "No $STACK heat stack. Exiting"
 	exit 1
     fi
-    tripleo-config-download
+    tripleo-config-download --stack-name $STACK
     if [[ ! -d tripleo-config-download ]]; then
 	echo "tripleo-config-download cmd didn't create tripleo-config-download dir"
     else
 	pushd tripleo-config-download
-	tripleo-ansible-inventory --static-yaml-inventory inventory.yaml
+	tripleo-ansible-inventory --static-yaml-inventory inventory.yaml --stack $STACK
 	ansible --ssh-extra-args "-o StrictHostKeyChecking=no" -i inventory.yaml all -m ping
 	popd
 	echo "pushd tripleo-config-download"

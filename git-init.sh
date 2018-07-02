@@ -2,12 +2,21 @@
 # Filename:                git-init.sh
 # Description:             configures my git env
 # Supported Langauge(s):   GNU Bash 4.2.x
-# Time-stamp:              <2018-07-02 10:09:36 fultonj> 
+# Time-stamp:              <2018-07-02 12:35:05 fultonj> 
 # -------------------------------------------------------
 # Clones the repos that I am interested in.
 # -------------------------------------------------------
-declare -a repos=(
-                      #'openstack/tripleo-heat-templates' \
+if [[ $1 == 'oooq' ]]; then
+    declare -a repos=(
+	'openstack/tripleo-quickstart'\
+	'openstack/tripleo-quickstart-extras'\
+	);
+fi
+# -------------------------------------------------------
+if [[ $# -eq 0 ]]; then
+    # uncomment whatever you want
+    declare -a repos=(
+                      'openstack/tripleo-heat-templates' \
                       # 'openstack/python-tripleoclient' \	
 		      # 'openstack/puppet-ceph'\
 		      #'openstack/heat'\
@@ -17,13 +26,14 @@ declare -a repos=(
 		      # 'openstack/tripleo-specs'\
 		      # 'openstack/os-net-config'\
 		      # 'openstack/tripleo-docs'\
-		      'openstack/tripleo-quickstart'\
-		      'openstack/tripleo-quickstart-extras'\
+		      # 'openstack/tripleo-quickstart'\
+		      # 'openstack/tripleo-quickstart-extras'\
 		      #'openstack/tripleo-repos' 
 		      #'openstack/puppet-nova'\
 		      #'openstack/puppet-tripleo'\
 		      # add the next repo here
-		 );
+    );
+fi
 # -------------------------------------------------------
 gerrit_user='fultonj'
 git config --global user.email "fulton@redhat.com"

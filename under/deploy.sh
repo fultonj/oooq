@@ -97,16 +97,6 @@ if [ $RUNQ -eq 1 ]; then
 	echo "ERROR: initial run of quickstart failed."
 	exit 1
     fi
-    
-    echo "generating network config as per LP1737602"
-    bash quickstart.sh \
-	 --teardown none \
-	 --retain-inventory \
-	 --tags 'overcloud-prep-config' \
-	 --release $RELEASE \
-	 --nodes ~/oooq/under/nodes.yaml \
-	 --config ~/oooq/under/config.yaml \
-	 $VIRTHOST
 fi
 # -------------------------------------------------------
 if [ $DEV -eq 1 ]; then

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # -------------------------------------------------------
 WORKAROUND=0
-NEW_OOOQ=1
+NEW_OOOQ=0
+DEV=1
 RUNQ=1
 PKGS=1
 SCRIPTS=1
@@ -26,9 +27,58 @@ if [ $WORKAROUND -eq 1 ]; then
 fi
 # -------------------------------------------------------
 if [ $NEW_OOOQ -eq 1 ]; then
+    if [ $DEV -eq 1 ]; then
+	echo "ERROR: DEV is not compatible with NEW_OOOQ"
+	exit 1
+    fi
+    sudo rm -rf ~/.quickstart
     url=https://raw.githubusercontent.com/openstack/tripleo-quickstart/master/quickstart.sh
     curl $url > quickstart.sh
+    bash quickstart.sh --install-deps
+fi
+# -------------------------------------------------------
+if [ $DEV -eq 1 ]; then
     sudo rm -rf ~/.quickstart
+    # if you already set up ~/git/{tripleo-quickstart,tripleo-quickstart-extras}
+    # with downloaded code reviews, then they will be used. otherwise, get them
+    OOOQ_REVIEW=579381
+    OOOQ_EXTRAS_REVIEW=579382
+    if [ $NEW_OOOQ -eq 1 ]; then
+	echo "ERROR: NEW_OOOQ is not compatible with DEV"
+	exit 1
+    fi
+    if [[ ! -d ~/git ]]; then
+	mkdir ~/git
+    fi
+    if [[ ! -d ~/git/tripleo-quickstart ]]; then
+	pushd ~/git/
+	if [[ ! -e ~/oooq/git-init.sh ]]; then
+	    echo "~/oooq/git-init.sh is missing. aborting"
+	    exit 1
+	fi
+	echo "Cloning master branches of oooq and oooq-extras"
+	echo "use 'git review -d <number>' to clone here next time"
+	ln -s ~/oooq/git-init.sh
+	bash git-init.sh oooq
+	popd
+    fi
+    if [[ -d ~/git/tripleo-quickstart && -d ~/git/tripleo-quickstart-extras ]]; then
+	if [[ $OOOQ_REVIEW ]]; then
+	    pushd ~/git/tripleo-quickstart
+	    git review -d $OOOQ_REVIEW
+	    popd
+	fi
+	if [[ $OOOQ_EXTRAS_REVIEW ]]; then
+	    pushd ~/git/tripleo-quickstart-extras
+	    git review -d $OOOQ_EXTRAS_REVIEW
+	    popd
+	fi
+	# take advantage of quickstart-extras-requirements.txt being able to use local dir
+	echo -n file: > ~/git/tripleo-quickstart/quickstart-extras-requirements.txt
+	echo ~/git/tripleo-quickstart-extras >> ~/git/tripleo-quickstart/quickstart-extras-requirements.txt
+    fi
+    echo "using oooq from ~/git/tripleo-quickstart"
+    pushd ~/git/tripleo-quickstart
     bash quickstart.sh --install-deps
 fi
 # -------------------------------------------------------
@@ -36,24 +86,31 @@ if [ $RUNQ -eq 1 ]; then
     time bash quickstart.sh \
     	 --teardown all \
     	 --release $RELEASE \
-    	 --nodes nodes.yaml \
-    	 --config config.yaml \
+    	 --nodes ~/oooq/under/nodes.yaml \
+    	 --config ~/oooq/under/config.yaml \
+	 --clean \
+	 --no-clone \
     	 $VIRTHOST
 
     if [[ $? -gt 0 ]]; then
+	popd
 	echo "ERROR: initial run of quickstart failed."
 	exit 1
     fi
     
-    echo "generating network config as per LP173760"
+    echo "generating network config as per LP1737602"
     bash quickstart.sh \
 	 --teardown none \
 	 --retain-inventory \
 	 --tags 'overcloud-prep-config' \
 	 --release $RELEASE \
-	 --nodes nodes.yaml \
-	 --config config.yaml \
+	 --nodes ~/oooq/under/nodes.yaml \
+	 --config ~/oooq/under/config.yaml \
 	 $VIRTHOST
+fi
+# -------------------------------------------------------
+if [ $DEV -eq 1 ]; then
+    popd # leave ~/git/tripleo-quickstart
 fi
 # -------------------------------------------------------
 if [ -d ~/.quickstart/ ]; then
@@ -86,6 +143,7 @@ if [ $SCRIPTS -eq 1 ]; then
 fi
 # -------------------------------------------------------
 if [ $VALIDATE -eq 1 ]; then
+    if [ $DEV -eq 1 ]; then pushd ~/git/tripleo-quickstart; fi
     bash quickstart.sh \
 	 --teardown none \
 	 --retain-inventory \
@@ -94,4 +152,5 @@ if [ $VALIDATE -eq 1 ]; then
 	 --nodes nodes.yaml \
 	 --config config.yaml \
 	 $VIRTHOST
+    if [ $DEV -eq 1 ]; then popd; fi
 fi

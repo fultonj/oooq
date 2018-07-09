@@ -1,12 +1,12 @@
 # Deploy an HA OpenStack environment
 # (+ 
 #    (* (* 1024 9) 3)    ; control
-#    (* (* 1024 2) 1)	 ; compute
+#    (* (* 1024 3) 1)	 ; compute
 #    (* (* 1024 6) 3)	 ; ceph
 #    (* (* 1024 13) 1))  ; under
 # 
 control_memory: 9216
-compute_memory: 2048
+compute_memory: 3072
 ceph_memory: 6144
 undercloud_memory: 13312
 undercloud_disk: 250

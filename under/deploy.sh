@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # -------------------------------------------------------
 WORKAROUND=0
-NEW_OOOQ=0
-DEV=1
+NEW_OOOQ=1
+DEV=0
 RUNQ=1
 PKGS=1
 SCRIPTS=1
@@ -83,17 +83,20 @@ if [ $DEV -eq 1 ]; then
 fi
 # -------------------------------------------------------
 if [ $RUNQ -eq 1 ]; then
+    if [ $DEV -eq 1 ]; then 
+	NO_CLONE="--no-clone"
+    fi
     time bash quickstart.sh \
     	 --teardown all \
     	 --release $RELEASE \
     	 --nodes ~/oooq/under/nodes.yaml \
     	 --config ~/oooq/under/config.yaml \
 	 --clean \
-	 --no-clone \
+	 $NO_CLONE \
     	 $VIRTHOST
 
     if [[ $? -gt 0 ]]; then
-	popd
+	if [ $DEV -eq 1 ]; then popd; fi
 	echo "ERROR: initial run of quickstart failed."
 	exit 1
     fi

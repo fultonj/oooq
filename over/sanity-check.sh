@@ -2,12 +2,20 @@
 
 OVERALL=1
 MDS=0
-CINDER=1
+CINDER=0
 GLANCE=0
 NOVA=0
 
+if [[ ! -e ~/ansible/ceph-inventory.yml ]]; then
+    if [[ ! -e ansible.sh ]]; then
+	exit 1
+	echo "unable to create inventory"
+    fi
+    bash ansible.sh
+fi
+
 function run_on_mon {
-    ansible -i ~/tripleo-config-download/inventory.yaml overcloud-controller-0 -b -m shell -a "docker exec ceph-mon-overcloud-controller-0 $1"
+    ansible -i ~/ansible/ceph-inventory.yml overcloud-controller-0 -b -m shell -a "docker exec ceph-mon-overcloud-controller-0 $1"
 }
 
 source ~/overcloudrc.v3

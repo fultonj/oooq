@@ -132,7 +132,8 @@ if [ $SCRIPTS -eq 1 ]; then
     ssh -F $SSH_ENV stack@undercloud "echo 'ln -s ~/oooq/over/deploy.sh' >> sh_me"
     ssh -F $SSH_ENV stack@undercloud "echo 'ln -s ~/oooq/over/overrides.yaml' >> sh_me"
     ssh -F $SSH_ENV stack@undercloud "echo 'source /home/stack/stackrc' >> ~/.bashrc"
-    ssh -F $SSH_ENV stack@undercloud "echo 'alias os=openstack' >> ~/.bashrc"    
+    ssh -F $SSH_ENV stack@undercloud "echo 'alias os=openstack' >> ~/.bashrc"
+    ssh -F $SSH_ENV stack@undercloud "if [[ ! -f ~/.ssh/config ]]; echo StrictHostKeyChecking no > ~/.ssh/config; chmod 0600 ~/.ssh/config; rm -f ~/.ssh/known_hosts 2> /dev/null; ln -s /dev/null ~/.ssh/known_hosts; fi"
 fi
 # -------------------------------------------------------
 if [ $VALIDATE -eq 1 ]; then

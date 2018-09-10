@@ -2,7 +2,7 @@
 # Filename:                git-init.sh
 # Description:             configures my git env
 # Supported Langauge(s):   GNU Bash 4.2.x
-# Time-stamp:              <2018-07-02 12:35:05 fultonj> 
+# Time-stamp:              <2018-09-10 10:40:55 fultonj> 
 # -------------------------------------------------------
 # Clones the repos that I am interested in.
 # -------------------------------------------------------
@@ -47,7 +47,7 @@ if [ $? -gt 0 ]; then
     dir=/tmp/$(date | md5sum | awk {'print $1'})
     mkdir $dir
     pushd $dir
-    wget ftp://195.220.108.108/linux/epel/7/x86_64/g/git-review-1.24-5.el7.noarch.rpm
+    curl http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/g/git-review-1.24-5.el7.noarch.rpm > git-review-1.24-5.el7.noarch.rpm
     sudo yum localinstall git-review-1.24-5.el7.noarch.rpm -y 
     popd 
     rm -rf $dir

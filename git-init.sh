@@ -16,7 +16,9 @@ fi
 if [[ $# -eq 0 ]]; then
     # uncomment whatever you want
     declare -a repos=(
-                      'openstack/tripleo-heat-templates' \
+                      #'openstack/tripleo-heat-templates' \
+                      # 'openstack/tripleo-ansible' \
+                      'openstack/tripleo-validations' \
                       # 'openstack/python-tripleoclient' \	
 		      # 'openstack/puppet-ceph'\
 		      #'openstack/heat'\

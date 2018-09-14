@@ -3,10 +3,11 @@
 # using this network option and do the steps in this doc for me
 # https://docs.openstack.org/tripleo-docs/latest/install/containers_deployment/standalone.html#networking-details
 # -------------------------------------------------------
-REPO=0
-INSTALL=0
-CONTAINERS=0
-PARAMS=0
+REPO=1
+INSTALL=1
+CONTAINERS=1
+PARAMS=1
+CEPH_PREP=1
 DEPLOY=1
 
 # I am using a VM on my fedora laptop and it needs to be able to ping its gateway
@@ -26,7 +27,7 @@ if [[ $REPO -eq 1 ]]; then
     curl -f $url/$rpm -o ~/rpms/$rpm
     if [[ -f ~/rpms/$rpm ]]; then
 	sudo yum install -y ~/rpms/$rpm
-	sudo -E tripleo-repos current-tripleo-dev
+	sudo -E tripleo-repos current-tripleo-dev ceph
 	sudo yum repolist
 	sudo yum update -y
     else
@@ -36,7 +37,7 @@ if [[ $REPO -eq 1 ]]; then
 fi
 
 if [[ $INSTALL -eq 1 ]]; then
-    sudo yum install -y python-tripleoclient
+    sudo yum install -y python-tripleoclient ceph-ansible
 fi
 
 if [[ $CONTAINERS -eq 1 ]]; then
@@ -44,7 +45,20 @@ if [[ $CONTAINERS -eq 1 ]]; then
       --output-env-file $HOME/containers-prepare-parameters.yaml
 fi
 
-
+if [[ $CEPH_PREP -eq 1 ]]; then
+    # create a block device
+    if [[ ! -e /dev/loop3 ]]; then # ensure /dev/loop3 does not exist before making it
+        command -v losetup >/dev/null 2>&1 || { sudo yum -y install util-linux; }
+        sudo dd if=/dev/zero of=/var/lib/ceph-osd.img bs=1 count=0 seek=7G
+        sudo losetup /dev/loop3 /var/lib/ceph-osd.img
+    elif [[ -f /var/lib/ceph-osd.img ]]; then #loop3 and ceph-osd.img exist
+        echo "warning: looks like ceph loop device already created. Trying to continue"
+    else
+        echo "error: /dev/loop3 exists but not /var/lib/ceph-osd.img. Exiting."
+        exit 1
+    fi
+    sudo lsblk
+fi
 
 if [[ $PARAMS -eq 1 ]]; then
     
@@ -75,6 +89,14 @@ parameter_defaults:
   StandaloneExtraConfig:
     nova::compute::libvirt::services::libvirt_virt_type: qemu
     nova::compute::libvirt::libvirt_virt_type: qemu
+  CephAnsibleDisksConfig:
+    devices:
+      - /dev/loop3
+    journal_size: 1024
+  CephAnsibleExtraConfig:
+    osd_scenario: collocated
+    osd_objectstore: filestore
+  CephAnsiblePlaybookVerbosity: 1
 EOF
 fi
 
@@ -84,6 +106,7 @@ if [[ $DEPLOY -eq 1 ]]; then
       --local-ip=$IP/$NETMASK \
       -e /usr/share/openstack-tripleo-heat-templates/environments/standalone.yaml \
       -r /usr/share/openstack-tripleo-heat-templates/roles/Standalone.yaml \
+      -e /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-ansible.yaml \
       -e $HOME/containers-prepare-parameters.yaml \
       -e $HOME/standalone_parameters.yaml \
       --output-dir $HOME \

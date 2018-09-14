@@ -57,6 +57,7 @@ if [[ $CEPH_PREP -eq 1 ]]; then
         echo "error: /dev/loop3 exists but not /var/lib/ceph-osd.img. Exiting."
         exit 1
     fi
+    sgdisk -Z /dev/loop3
     sudo lsblk
 fi
 
@@ -96,7 +97,11 @@ parameter_defaults:
   CephAnsibleExtraConfig:
     osd_scenario: collocated
     osd_objectstore: filestore
-  CephAnsiblePlaybookVerbosity: 1
+    cluster_network: 172.31.0.0/24
+    public_network: 172.31.0.0/24
+  CephAnsiblePlaybookVerbosity: 3
+  CephPoolDefaultSize: 1
+  CephPoolDefaultPgNum: 32
 EOF
 fi
 

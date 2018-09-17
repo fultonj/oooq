@@ -8,6 +8,7 @@ INSTALL=1
 CONTAINERS=1
 PARAMS=1
 CEPH_PREP=1
+OSD_ROLE=1
 DEPLOY=1
 
 # I am using a VM on my fedora laptop and it needs to be able to ping its gateway
@@ -43,6 +44,8 @@ fi
 if [[ $CONTAINERS -eq 1 ]]; then
     openstack tripleo container image prepare default \
       --output-env-file $HOME/containers-prepare-parameters.yaml
+    # hack add last known working ceph tag version in my environment
+    sed -i 's/ceph_tag:.*/ceph_tag:\ v3.1.0-stable-3.1-luminous-centos-7-x86_64/g' $HOME/containers-prepare-parameters.yaml
 fi
 
 if [[ $CEPH_PREP -eq 1 ]]; then
@@ -105,13 +108,19 @@ parameter_defaults:
 EOF
 fi
 
+if [[ $OSD_ROLE -eq 1 ]]; then
+    # workaround https://bugs.launchpad.net/tripleo/+bug/1793020
+    cp /usr/share/openstack-tripleo-heat-templates/roles/Standalone.yaml $HOME/Standalone.yaml
+    echo "    - OS::TripleO::Services::CephOSD" >> $HOME/Standalone.yaml
+fi
+
 if [[ $DEPLOY -eq 1 ]]; then
     openstack tripleo deploy \
       --templates \
       --local-ip=$IP/$NETMASK \
       -e /usr/share/openstack-tripleo-heat-templates/environments/standalone.yaml \
-      -r /usr/share/openstack-tripleo-heat-templates/roles/Standalone.yaml \
       -e /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-ansible.yaml \
+      -r $HOME/Standalone.yaml \
       -e $HOME/containers-prepare-parameters.yaml \
       -e $HOME/standalone_parameters.yaml \
       --output-dir $HOME \

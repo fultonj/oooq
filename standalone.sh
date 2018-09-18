@@ -10,9 +10,9 @@ PARAMS=1
 CEPH_PREP=1
 OSD_ROLE=1
 DEPLOY=1
-TEST=1
-CEPH=1
-GLANCE=1
+TEST=0
+CEPH=0
+GLANCE=0
 NOVA=0
 DEPS=0
 
@@ -185,8 +185,15 @@ if [[ $TEST -eq 1 ]]; then
     if [[ $NOVA -eq 1 ]]; then
 	if [[ $DEPS -eq 1 ]]; then
 	    echo "Checking the following dependencies..."
-	    if [[ $(openstack image list -c Name -f value | grep cirros | wc -l) -eq 0 ]]; then
-		echo "Unable to find ciros image; re-run with GLANCE=1"
+	    if [[ $(getenforce) == "Enforcing" ]]; then
+		# workaround /usr/libexec/qemu-kvm: Permission denied
+		setenforce 0
+		getenforce
+	    fi
+	    echo "- selinux permissive"
+	    IMAGE_ID=$(openstack image show cirros -f value -c id)
+	    if [[ -z $IMAGE_ID ]]; then
+		echo "Unable to find cirros image; re-run with GLANCE=1"
 		exit 1
 	    fi
 	    echo "- glance image"
@@ -254,23 +261,24 @@ if [[ $TEST -eq 1 ]]; then
 		openstack flavor create --ram 512 --disk 1 --vcpu 1 --public tiny
 	    fi
 	    echo "- flavor"
-	    # create SSH keypair only if necessary
 	    KEYPAIR_ID=$(openstack keypair show demokp -f value -c user_id)
-	    if [[ -z $KEYPAIR_ID ]]; then
-		openstack keypair create demokp > ~/demokp.pem
-		chmod 600 ~/demokp.pem
+	    if [[ ! -z $KEYPAIR_ID ]]; then
+		openstack keypair delete demokp
+		if [[ -f ~/demokp.pem ]]; then
+		    rm -f ~/demokp.pem
+		fi
 	    fi
-	    echo "- ssh keypairs"
+	    openstack keypair create demokp > ~/demokp.pem
+	    chmod 600 ~/demokp.pem
+	    echo "- SSH keypairs"
 	    echo ""
-	fi
-	
+	fi	
 	echo "Deleting previous Nova server(s)"
-	# delete all running instances if any
 	for ID in $(openstack server list -f value -c ID); do
 	    openstack server delete $ID;
 	done
-	echo "Launcing Nova server"
-	# launch instance
+
+	echo "Launching Nova server"
 	openstack server create --flavor tiny --image cirros --key-name demokp --network private --security-group basic myserver
 
 	STATUS=$(openstack server show myserver -f value -c status)
@@ -287,9 +295,25 @@ if [[ $TEST -eq 1 ]]; then
 	fi
 	if [[ $STATUS == "ACTIVE" ]]; then
 	    openstack server list
+	    echo -e "\nListing objects in Ceph vms pool:\n"
 	    docker exec -ti $MON rbd -p vms ls -l
+	    echo ""
+	    FLOATING_IP=$(openstack floating ip list -f value -c "Floating IP Address")
 	    openstack server add floating ip myserver $FLOATING_IP
-	    ssh cirros@$FLOATING_IP "uname -a; lsblk"
+	    echo "Will attempt to SSH into $FLOATING_IP for 30 seconds"
+	    i=0
+	    while true; do
+		ssh -o "UserKnownHostsFile /dev/null" -o "StrictHostKeyChecking no" \
+		    -i ~/demokp.pem cirros@$FLOATING_IP "exit" 2> /dev/null && break
+		echo -n "."
+		sleep 1
+		i=$(($i+1))
+		if [[ $i -gt 30 ]]; then break; fi
+	    done
+	    echo ""
+	    ssh -o "UserKnownHostsFile /dev/null" -o "StrictHostKeyChecking no" \
+		-i ~/demokp.pem cirros@$FLOATING_IP "uname -a; lsblk" 
+	    echo -e "\nssh -o \"UserKnownHostsFile /dev/null\" -o \"StrictHostKeyChecking no\" -i ~/demokp.pem cirros@$FLOATING_IP"
 	fi
     fi
 fi

@@ -10,6 +10,9 @@ PARAMS=1
 CEPH_PREP=1
 OSD_ROLE=1
 DEPLOY=1
+TEST=1
+CEPH=1
+GLANCE=1
 
 # I am using a VM on my fedora laptop and it needs to be able to ping its gateway
 # so I run this to workaround the default security setup.
@@ -125,4 +128,55 @@ if [[ $DEPLOY -eq 1 ]]; then
       -e $HOME/standalone_parameters.yaml \
       --output-dir $HOME \
       --standalone
+fi
+
+# -------------------------------------------------------
+# TESTING ONLY
+# -------------------------------------------------------
+
+if [[ $TEST -eq 1 ]]; then
+    export OS_CLOUD=standalone
+    openstack endpoint list > /dev/null
+    if [[ $? -gt 0 ]]; then
+	echo "Cannot list end points. Aborting"
+	exit 1
+    fi
+    export OS_CLOUD=standalone
+    export GATEWAY=192.168.24.1
+    export STANDALONE_HOST=192.168.24.2
+    export PUBLIC_NETWORK_CIDR=192.168.24.0/24
+    export PRIVATE_NETWORK_CIDR=192.168.100.0/24
+    export PUBLIC_NET_START=192.168.24.4
+    export PUBLIC_NET_END=192.168.24.5
+    export DNS_SERVER=8.8.8.8
+    export MON=$(docker ps --filter 'name=ceph-mon' --format "{{.ID}}")
+    
+    if [[ $CEPH -eq 1 ]]; then
+	docker exec -ti $MON ceph -s
+	docker exec -ti $MON ceph df
+	echo ""
+	docker exec -ti $MON ceph osd dump | grep pool
+	echo ""
+    fi
+
+    if [[ $GLANCE -eq 1 ]]; then
+	# delete all images if any
+	for ID in $(openstack image list -f value -c ID); do
+	    openstack image delete $ID;
+	done
+	# download cirros image only if necessary
+	IMG=cirros-0.4.0-x86_64-disk.img
+	RAW=$(echo $IMG | sed s/img/raw/g)
+	if [ ! -f $RAW ]; then
+	    if [ ! -f $IMG ]; then
+		echo "Could not find qemu image $img; downloading a copy."
+		curl -# https://download.cirros-cloud.net/0.4.0/$IMG > $IMG
+	    fi
+	    echo "Could not find raw image $RAW; converting."
+	    qemu-img convert -f qcow2 -O raw $IMG $RAW
+	fi
+	docker exec -ti $MON rbd -p images ls -l
+	openstack image create cirros --container-format bare --disk-format raw --public --file $RAW
+	docker exec -ti $MON rbd -p images ls -l
+    fi
 fi

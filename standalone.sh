@@ -13,6 +13,8 @@ DEPLOY=1
 TEST=1
 CEPH=1
 GLANCE=1
+NOVA=0
+DEPS=0
 
 # I am using a VM on my fedora laptop and it needs to be able to ping its gateway
 # so I run this to workaround the default security setup.
@@ -178,5 +180,116 @@ if [[ $TEST -eq 1 ]]; then
 	docker exec -ti $MON rbd -p images ls -l
 	openstack image create cirros --container-format bare --disk-format raw --public --file $RAW
 	docker exec -ti $MON rbd -p images ls -l
+    fi
+
+    if [[ $NOVA -eq 1 ]]; then
+	if [[ $DEPS -eq 1 ]]; then
+	    echo "Checking the following dependencies..."
+	    if [[ $(openstack image list -c Name -f value | grep cirros | wc -l) -eq 0 ]]; then
+		echo "Unable to find ciros image; re-run with GLANCE=1"
+		exit 1
+	    fi
+	    echo "- glance image"
+	    # create basic security group to allow ssh/ping/dns only if necessary
+	    SEC_GROUP_ID=$(openstack security group show basic -f value -c id)
+	    if [[ -z $SEC_GROUP_ID ]]; then
+		openstack security group create basic
+		# allow ssh
+		openstack security group rule create basic --protocol tcp --dst-port 22:22 --remote-ip 0.0.0.0/0
+		# allow ping
+		openstack security group rule create --protocol icmp basic
+		# allow DNS
+		openstack security group rule create --protocol udp --dst-port 53:53 basic
+	    fi
+	    echo "- security groups"
+	    # create public/private networks only if necessary 
+	    PUB_NET_ID=$(openstack network show public -c id -f value)
+	    if [[ -z $PUB_NET_ID ]]; then
+		openstack network create --external --provider-physical-network datacentre --provider-network-type flat public
+	    fi
+	    PUB_SUBNET_ID=$(openstack network show public -c subnets -f value)
+	    if [[ -z $PUB_SUBNET_ID ]]; then
+		openstack subnet create public-net \
+			  --subnet-range $PUBLIC_NETWORK_CIDR \
+			  --no-dhcp \
+			  --gateway $GATEWAY \
+			  --allocation-pool start=$PUBLIC_NET_START,end=$PUBLIC_NET_END \
+			  --network public
+	    fi
+	    echo "- public networks"
+	    PRI_NET_ID=$(openstack network show private -c id -f value)
+	    if [[ -z $PRI_NET_ID ]]; then
+		openstack network create --internal private
+	    fi
+	    PRI_SUBNET_ID=$(openstack network show private -c subnets -f value)
+	    if [[ -z $PRI_SUBNET_ID ]]; then
+		openstack subnet create private-net \
+			  --subnet-range $PRIVATE_NETWORK_CIDR \
+			  --network private
+	    fi
+	    echo "- private networks"
+	    # create router only if necessary
+	    ROUTER_ID=$(openstack router show vrouter -f value -c id)
+	    if [[ -z $ROUTER_ID ]]; then
+		# IP will be automatically assigned from allocation pool of the subnet
+		openstack router create vrouter
+		openstack router set vrouter --external-gateway public
+		openstack router add subnet vrouter private-net
+	    fi
+	    echo "- router"
+	    # create floating IP only if necessary
+	    FLOATING_IP=$(openstack floating ip list -f value -c "Floating IP Address")
+	    if [[ -z $FLOATING_IP ]]; then
+		openstack floating ip create public
+		FLOATING_IP=$(openstack floating ip list -f value -c "Floating IP Address")
+	    fi
+	    if [[ -z $FLOATING_IP ]]; then
+		echo "Unable to use existing or create new floating IP"
+		exit 1
+	    fi
+	    echo "- floating IP"
+	    # create flavor only if necessary
+	    FLAVOR_ID=$(openstack flavor show tiny -f value -c id)
+	    if [[ -z $FLAVOR_ID ]]; then
+		openstack flavor create --ram 512 --disk 1 --vcpu 1 --public tiny
+	    fi
+	    echo "- flavor"
+	    # create SSH keypair only if necessary
+	    KEYPAIR_ID=$(openstack keypair show demokp -f value -c user_id)
+	    if [[ -z $KEYPAIR_ID ]]; then
+		openstack keypair create demokp > ~/demokp.pem
+		chmod 600 ~/demokp.pem
+	    fi
+	    echo "- ssh keypairs"
+	    echo ""
+	fi
+	
+	echo "Deleting previous Nova server(s)"
+	# delete all running instances if any
+	for ID in $(openstack server list -f value -c ID); do
+	    openstack server delete $ID;
+	done
+	echo "Launcing Nova server"
+	# launch instance
+	openstack server create --flavor tiny --image cirros --key-name demokp --network private --security-group basic myserver
+
+	STATUS=$(openstack server show myserver -f value -c status)
+	echo "Server status: $STATUS (waiting)"
+	while [[ $STATUS == "BUILD" ]]; do
+	    sleep 1
+	    echo -n "."
+	    STATUS=$(openstack server show myserver -f value -c status)
+	done
+	echo ""
+	if [[ $STATUS == "ERROR" ]]; then
+	    echo "Server build failed; aborting."
+	    exit 1
+	fi
+	if [[ $STATUS == "ACTIVE" ]]; then
+	    openstack server list
+	    docker exec -ti $MON rbd -p vms ls -l
+	    openstack server add floating ip myserver $FLOATING_IP
+	    ssh cirros@$FLOATING_IP "uname -a; lsblk"
+	fi
     fi
 fi

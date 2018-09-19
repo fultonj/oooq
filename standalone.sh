@@ -8,7 +8,6 @@ INSTALL=1
 CONTAINERS=1
 PARAMS=1
 CEPH_PREP=1
-OSD_ROLE=1
 DEPLOY=1
 TEST=0
 CEPH=0
@@ -24,6 +23,7 @@ DEPS=0
 export IP=192.168.24.2
 export NETMASK=24
 export INTERFACE=eth0
+export FETCH=/tmp/ceph_ansible_fetch
 
 if [[ $REPO -eq 1 ]]; then
     if [[ ! -d ~/rpms ]]; then mkdir ~/rpms; fi
@@ -67,6 +67,10 @@ if [[ $CEPH_PREP -eq 1 ]]; then
     fi
     sgdisk -Z /dev/loop3
     sudo lsblk
+    if [[ ! -d $FETCH ]]; then
+	mkdir $FETCH
+    fi
+    chmod 777 $FETCH
 fi
 
 if [[ $PARAMS -eq 1 ]]; then
@@ -105,27 +109,25 @@ parameter_defaults:
   CephAnsibleExtraConfig:
     osd_scenario: collocated
     osd_objectstore: filestore
-    cluster_network: 172.31.0.0/24
-    public_network: 172.31.0.0/24
+    cluster_network: 192.168.24.0/24
+    public_network: 192.168.24.0/24
   CephAnsiblePlaybookVerbosity: 3
   CephPoolDefaultSize: 1
   CephPoolDefaultPgNum: 32
+  LocalCephAnsibleFetchDirectoryBackup: $FETCH
 EOF
 fi
 
-if [[ $OSD_ROLE -eq 1 ]]; then
-    # workaround https://bugs.launchpad.net/tripleo/+bug/1793020
-    cp /usr/share/openstack-tripleo-heat-templates/roles/Standalone.yaml $HOME/Standalone.yaml
-    echo "    - OS::TripleO::Services::CephOSD" >> $HOME/Standalone.yaml
-fi
-
 if [[ $DEPLOY -eq 1 ]]; then
+    if [[ ! -d ~/templates ]]; then
+	ln -s /usr/share/openstack-tripleo-heat-templates ~/templates
+    fi
     openstack tripleo deploy \
-      --templates \
+      --templates ~/templates \
       --local-ip=$IP/$NETMASK \
-      -e /usr/share/openstack-tripleo-heat-templates/environments/standalone.yaml \
-      -e /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-ansible.yaml \
-      -r $HOME/Standalone.yaml \
+      -e ~/templates/environments/standalone.yaml \
+      -e ~/templates/environments/ceph-ansible/ceph-ansible.yaml \
+      -r ~/templates/roles/Standalone.yaml \
       -e $HOME/containers-prepare-parameters.yaml \
       -e $HOME/standalone_parameters.yaml \
       --output-dir $HOME \

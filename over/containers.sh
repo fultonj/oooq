@@ -14,10 +14,13 @@ if [[ $VERSION == "ROCKY" ]]; then
     echo "  OS::TripleO::Services::OVNDBs: OS::Heat::None" >> ~/no-ovn.yaml
     echo "  OS::TripleO::Services::OVNController: OS::Heat::None" >> ~/no-ovn.yaml
     echo "  OS::TripleO::Services::OVNMetadataAgent: OS::Heat::None" >> ~/no-ovn.yaml
-    
+
     sudo openstack tripleo container image prepare default \
 	      --local-push-destination \
-	      --output-env-file containers-prepare-parameter.yaml
+	      --output-env-file ~/containers-prepare-parameter.yaml
+
+    # for now manually apply https://review.openstack.org/#/c/603323/
+    sed -i 's/ceph_tag:.*/ceph_tag:\ v3.1.0-stable-3.1-luminous-centos-7-x86_64/g' ~/containers-prepare-parameter.yaml
 
     sudo openstack tripleo container image prepare \
       -e ~/containers-prepare-parameter.yaml \

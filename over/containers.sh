@@ -5,6 +5,16 @@ VERSION=ROCKY
 # VERSION=QUEENS
 
 if [[ $VERSION == "ROCKY" ]]; then
+    # for now manually apply https://review.openstack.org/#/c/604241
+    
+    echo "resource_registry:" > ~/no-odl.yaml
+    echo "  OS::TripleO::Services::OpenDaylightApi: OS::Heat::None" >> ~/no-odl.yaml
+    echo "  OS::TripleO::Services::OpenDaylightOvs: OS::Heat::None" >> ~/no-odl.yaml
+    echo "resource_registry:" > ~/no-ovn.yaml
+    echo "  OS::TripleO::Services::OVNDBs: OS::Heat::None" >> ~/no-ovn.yaml
+    echo "  OS::TripleO::Services::OVNController: OS::Heat::None" >> ~/no-ovn.yaml
+    echo "  OS::TripleO::Services::OVNMetadataAgent: OS::Heat::None" >> ~/no-ovn.yaml
+    
     sudo openstack tripleo container image prepare default \
 	      --local-push-destination \
 	      --output-env-file containers-prepare-parameter.yaml
@@ -12,6 +22,8 @@ if [[ $VERSION == "ROCKY" ]]; then
     sudo openstack tripleo container image prepare \
       -e ~/containers-prepare-parameter.yaml \
       -e /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-ansible.yaml \
+      -e ~/no-odl.yaml \
+      -e ~/no-ovn.yaml \
       --output-env-file ~/containers-default-parameters.yaml
 
 fi

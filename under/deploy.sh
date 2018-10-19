@@ -9,6 +9,7 @@ SCRIPTS=1
 VALIDATE=0
 RELEASE=master-tripleo-ci
 #RELEASE=queens
+#RELEASE=rocky
 # -------------------------------------------------------
 export VIRTHOST=127.0.0.2
 echo "Testing virthost connection"
@@ -133,7 +134,8 @@ if [ $SCRIPTS -eq 1 ]; then
     ssh -F $SSH_ENV stack@undercloud "echo 'ln -s ~/oooq/over/overrides.yaml' >> sh_me"
     ssh -F $SSH_ENV stack@undercloud "echo 'source /home/stack/stackrc' >> ~/.bashrc"
     ssh -F $SSH_ENV stack@undercloud "echo 'alias os=openstack' >> ~/.bashrc"
-    ssh -F $SSH_ENV stack@undercloud "if [[ ! -f ~/.ssh/config ]]; echo StrictHostKeyChecking no > ~/.ssh/config; chmod 0600 ~/.ssh/config; rm -f ~/.ssh/known_hosts 2> /dev/null; ln -s /dev/null ~/.ssh/known_hosts; fi"
+    ssh -F $SSH_ENV stack@undercloud "echo StrictHostKeyChecking no > ~/.ssh/config; chmod 0600 ~/.ssh/config; rm -f ~/.ssh/known_hosts 2> /dev/null; ln -s /dev/null ~/.ssh/known_hosts;"
+    ssh -F $SSH_ENV stack@undercloud "curl https://github.com/fultonj.keys >> ~/.ssh/authorized_keys"
 fi
 # -------------------------------------------------------
 if [ $VALIDATE -eq 1 ]; then

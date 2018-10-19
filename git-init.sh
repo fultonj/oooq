@@ -2,7 +2,7 @@
 # Filename:                git-init.sh
 # Description:             configures my git env
 # Supported Langauge(s):   GNU Bash 4.2.x
-# Time-stamp:              <2018-09-10 10:40:55 fultonj> 
+# Time-stamp:              <2018-10-19 07:44:46 fultonj> 
 # -------------------------------------------------------
 # Clones the repos that I am interested in.
 # -------------------------------------------------------
@@ -16,9 +16,9 @@ fi
 if [[ $# -eq 0 ]]; then
     # uncomment whatever you want
     declare -a repos=(
-                      #'openstack/tripleo-heat-templates' \
+                      'openstack/tripleo-heat-templates' \
                       # 'openstack/tripleo-ansible' \
-                      'openstack/tripleo-validations' \
+                      #'openstack/tripleo-validations' \
                       # 'openstack/python-tripleoclient' \	
 		      # 'openstack/puppet-ceph'\
 		      #'openstack/heat'\

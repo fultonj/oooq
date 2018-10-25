@@ -14,12 +14,15 @@ CEPH=0
 GLANCE=0
 NOVA=0
 DEPS=0
+# -------------------------------------------------------
+PROVIDER_NETWORK=1
+# ^ should testing be done using a provider network or a tenant network?
 
 # I am using a VM on my fedora laptop and it needs to be able to ping its gateway
 # so I run this to workaround the default security setup.
 #sudo firewall-cmd --permanent --direct --add-rule ipv4 filter INPUT 0 -p icmp -s 192.168.122.0/24 -d 192.168.122.1 -j ACCEPT
 #sudo systemctl restart firewalld.service
-
+# -------------------------------------------------------
 export IP=192.168.24.2
 export NETMASK=24
 export INTERFACE=eth0
@@ -28,9 +31,9 @@ export FETCH=/tmp/ceph_ansible_fetch
 if [[ $REPO -eq 1 ]]; then
     if [[ ! -d ~/rpms ]]; then mkdir ~/rpms; fi
     url=https://trunk.rdoproject.org/centos7/current/
-    rpm_name=$(curl $url | grep python2-tripleo-repos | sed -e 's/<[^>]*>//g' | awk 'BEGIN { FS = ".rpm" } ; { print $1 }')
+    rpm_name=$(curl -k $url | grep python2-tripleo-repos | sed -e 's/<[^>]*>//g' | awk 'BEGIN { FS = ".rpm" } ; { print $1 }')
     rpm=$rpm_name.rpm
-    curl -f $url/$rpm -o ~/rpms/$rpm
+    curl -k -f $url/$rpm -o ~/rpms/$rpm
     if [[ -f ~/rpms/$rpm ]]; then
 	sudo yum install -y ~/rpms/$rpm
 	sudo -E tripleo-repos current-tripleo-dev ceph
@@ -43,7 +46,7 @@ if [[ $REPO -eq 1 ]]; then
 fi
 
 if [[ $INSTALL -eq 1 ]]; then
-    sudo yum install -y python-tripleoclient ceph-ansible
+    sudo yum install -y python-tripleoclient ceph-ansible gdisk
 fi
 
 if [[ $CONTAINERS -eq 1 ]]; then
@@ -131,7 +134,8 @@ if [[ $DEPLOY -eq 1 ]]; then
       -e $HOME/containers-prepare-parameters.yaml \
       -e $HOME/standalone_parameters.yaml \
       --output-dir $HOME \
-      --standalone
+      --standalone \
+      --keep-running
 fi
 
 # -------------------------------------------------------
@@ -148,13 +152,17 @@ if [[ $TEST -eq 1 ]]; then
     export OS_CLOUD=standalone
     export GATEWAY=192.168.24.1
     export STANDALONE_HOST=192.168.24.2
+    if [[ $PROVIDER_NETWORK -eq 1 ]]; then
+	export VROUTER_IP=192.168.24.3
+    else
+	export PRIVATE_NETWORK_CIDR=192.168.100.0/24
+    fi
     export PUBLIC_NETWORK_CIDR=192.168.24.0/24
-    export PRIVATE_NETWORK_CIDR=192.168.100.0/24
     export PUBLIC_NET_START=192.168.24.4
     export PUBLIC_NET_END=192.168.24.5
     export DNS_SERVER=8.8.8.8
     export MON=$(docker ps --filter 'name=ceph-mon' --format "{{.ID}}")
-    
+
     if [[ $CEPH -eq 1 ]]; then
 	docker exec -ti $MON ceph -s
 	docker exec -ti $MON ceph df
@@ -211,52 +219,77 @@ if [[ $TEST -eq 1 ]]; then
 		openstack security group rule create --protocol udp --dst-port 53:53 basic
 	    fi
 	    echo "- security groups"
-	    # create public/private networks only if necessary 
+	    # create public/private network only if necessary 
 	    PUB_NET_ID=$(openstack network show public -c id -f value)
 	    if [[ -z $PUB_NET_ID ]]; then
 		openstack network create --external --provider-physical-network datacentre --provider-network-type flat public
 	    fi
 	    PUB_SUBNET_ID=$(openstack network show public -c subnets -f value)
 	    if [[ -z $PUB_SUBNET_ID ]]; then
-		openstack subnet create public-net \
+		if [[ $PROVIDER_NETWORK -eq 1 ]]; then
+		    openstack subnet create public-net \
+			--subnet-range $PUBLIC_NETWORK_CIDR \
+			--gateway $GATEWAY \
+			--allocation-pool start=$PUBLIC_NET_START,end=$PUBLIC_NET_END \
+			--network public \
+			--host-route destination=169.254.169.254/32,gateway=$VROUTER_IP \
+			--host-route destination=0.0.0.0/0,gateway=$GATEWAY \
+			--dns-nameserver $DNS_SERVER
+		else
+		    openstack subnet create public-net \
 			  --subnet-range $PUBLIC_NETWORK_CIDR \
 			  --no-dhcp \
 			  --gateway $GATEWAY \
 			  --allocation-pool start=$PUBLIC_NET_START,end=$PUBLIC_NET_END \
 			  --network public
+		fi
 	    fi
 	    echo "- public networks"
-	    PRI_NET_ID=$(openstack network show private -c id -f value)
-	    if [[ -z $PRI_NET_ID ]]; then
-		openstack network create --internal private
+	    if [[ $PROVIDER_NETWORK -eq 0 ]]; then
+		PRI_NET_ID=$(openstack network show private -c id -f value)
+		if [[ -z $PRI_NET_ID ]]; then
+		    openstack network create --internal private
+		fi
+		PRI_SUBNET_ID=$(openstack network show private -c subnets -f value)
+		if [[ -z $PRI_SUBNET_ID ]]; then
+		    openstack subnet create private-net \
+			--subnet-range $PRIVATE_NETWORK_CIDR \
+			--network private
+		fi
+		echo "- private networks"
 	    fi
-	    PRI_SUBNET_ID=$(openstack network show private -c subnets -f value)
-	    if [[ -z $PRI_SUBNET_ID ]]; then
-		openstack subnet create private-net \
-			  --subnet-range $PRIVATE_NETWORK_CIDR \
-			  --network private
-	    fi
-	    echo "- private networks"
 	    # create router only if necessary
 	    ROUTER_ID=$(openstack router show vrouter -f value -c id)
 	    if [[ -z $ROUTER_ID ]]; then
-		# IP will be automatically assigned from allocation pool of the subnet
-		openstack router create vrouter
-		openstack router set vrouter --external-gateway public
-		openstack router add subnet vrouter private-net
+		if [[ $PROVIDER_NETWORK -eq 1 ]]; then
+		    # vrouter needed for metadata route
+		    # NOTE(aschultz): In this case we're creating a fixed IP because we need
+		    # to create a manual route in the subnet for the metadata service
+		    openstack router create vrouter
+		    openstack port create --network public --fixed-ip \
+			subnet=public-net,ip-address=$VROUTER_IP vrouter-port
+		    openstack router add port vrouter vrouter-port
+		else
+		    # IP will be automatically assigned from allocation pool of the subnet
+		    openstack router create vrouter
+		    openstack router set vrouter --external-gateway public
+		    openstack router add subnet vrouter private-net
+		fi
 	    fi
 	    echo "- router"
-	    # create floating IP only if necessary
-	    FLOATING_IP=$(openstack floating ip list -f value -c "Floating IP Address")
-	    if [[ -z $FLOATING_IP ]]; then
-		openstack floating ip create public
-		FLOATING_IP=$(openstack floating ip list -f value -c "Floating IP Address")
+	    if [[ $PROVIDER_NETWORK -eq 0 ]]; then
+	        # create floating IP only if necessary
+	        FLOATING_IP=$(openstack floating ip list -f value -c "Floating IP Address")
+		if [[ -z $FLOATING_IP ]]; then
+		    openstack floating ip create public
+		    FLOATING_IP=$(openstack floating ip list -f value -c "Floating IP Address")
+		fi
+		if [[ -z $FLOATING_IP ]]; then
+		    echo "Unable to use existing or create new floating IP"
+		    exit 1
+		fi
+		echo "- floating IP"
 	    fi
-	    if [[ -z $FLOATING_IP ]]; then
-		echo "Unable to use existing or create new floating IP"
-		exit 1
-	    fi
-	    echo "- floating IP"
 	    # create flavor only if necessary
 	    FLAVOR_ID=$(openstack flavor show tiny -f value -c id)
 	    if [[ -z $FLAVOR_ID ]]; then
@@ -281,8 +314,11 @@ if [[ $TEST -eq 1 ]]; then
 	done
 
 	echo "Launching Nova server"
-	openstack server create --flavor tiny --image cirros --key-name demokp --network private --security-group basic myserver
-
+	if [[ $PROVIDER_NETWORK -eq 1 ]]; then
+	    openstack server create --flavor tiny --image cirros --key-name demokp --network public --security-group basic myserver
+	else
+	    openstack server create --flavor tiny --image cirros --key-name demokp --network private --security-group basic myserver
+	fi
 	STATUS=$(openstack server show myserver -f value -c status)
 	echo "Server status: $STATUS (waiting)"
 	while [[ $STATUS == "BUILD" ]]; do
@@ -300,13 +336,16 @@ if [[ $TEST -eq 1 ]]; then
 	    echo -e "\nListing objects in Ceph vms pool:\n"
 	    docker exec -ti $MON rbd -p vms ls -l
 	    echo ""
-	    FLOATING_IP=$(openstack floating ip list -f value -c "Floating IP Address")
-	    openstack server add floating ip myserver $FLOATING_IP
-	    echo "Will attempt to SSH into $FLOATING_IP for 30 seconds"
+	    if [[ $PROVIDER_NETWORK -eq 1 ]]; then
+		SRV_IP=$(openstack server show myserver -c addresses -f value | sed s/public=//g)
+	    else
+		SRV_IP=$(openstack floating ip list -f value -c "Floating IP Address")
+	    fi
+	    echo "Will attempt to SSH into $SRV_IP for 30 seconds"
 	    i=0
 	    while true; do
 		ssh -o "UserKnownHostsFile /dev/null" -o "StrictHostKeyChecking no" \
-		    -i ~/demokp.pem cirros@$FLOATING_IP "exit" 2> /dev/null && break
+		    -i ~/demokp.pem cirros@$SRV_IP "exit" 2> /dev/null && break
 		echo -n "."
 		sleep 1
 		i=$(($i+1))
@@ -314,8 +353,8 @@ if [[ $TEST -eq 1 ]]; then
 	    done
 	    echo ""
 	    ssh -o "UserKnownHostsFile /dev/null" -o "StrictHostKeyChecking no" \
-		-i ~/demokp.pem cirros@$FLOATING_IP "uname -a; lsblk" 
-	    echo -e "\nssh -o \"UserKnownHostsFile /dev/null\" -o \"StrictHostKeyChecking no\" -i ~/demokp.pem cirros@$FLOATING_IP"
+		-i ~/demokp.pem cirros@$SRV_IP "uname -a; lsblk" 
+	    echo -e "\nssh -o \"UserKnownHostsFile /dev/null\" -o \"StrictHostKeyChecking no\" -i ~/demokp.pem cirros@$SRV_IP"
 	fi
     fi
 fi

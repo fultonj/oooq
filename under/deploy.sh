@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # -------------------------------------------------------
 WORKAROUND=0
+PIP=1
 NEW_OOOQ=1
 DEV=0
 RUNQ=1
@@ -25,6 +26,11 @@ if [ $WORKAROUND -eq 1 ]; then
     sudo yum install -y *rpm
     popd
     sudo systemctl restart libvirtd
+fi
+# -------------------------------------------------------
+if [ $PIP -eq 1 ]; then
+  curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
+  sudo python get-pip.py
 fi
 # -------------------------------------------------------
 if [ $NEW_OOOQ -eq 1 ]; then

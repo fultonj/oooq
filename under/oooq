@@ -1,6 +1,6 @@
 # Filename:                oooq.sh
 # Description:             Help me connect to oooq hosts
-# Time-stamp:              <2019-09-03 10:21:18 fultonj>
+# Time-stamp:              <2019-09-13 07:33:36 fultonj>
 # -------------------------------------------------------
 # I have 2 centos systems hosting tripleo-quickstart:
 # - fultonj@hamfast
@@ -84,8 +84,11 @@ function tunnel() {
 	cmd=$i$opt
 	sed -i $cmd ~/.ssh/known_hosts
     done
-    #cmd="grep ProxyCommand .quickstart/ssh.config.ansible | tail -1  | awk {'print \$14'}"
-    cmd="grep ProxyCommand /home/fultonj/.ssh/config | tail -1  | awk {'print \$10'}"
+    if [[ $port == 3333 ]]; then
+        cmd="grep standalone /etc/hosts | awk {'print \$1'}"
+    else
+        cmd="grep ProxyCommand /home/fultonj/.ssh/config | tail -1  | awk {'print \$10'}"
+    fi
     undercloud_port=$(ssh $user@$hypervisor $cmd) # e.g. 1.2.3.4:22
     undercloud_port=$undercloud_port:22
     nothing=$(echo $undercloud_port | grep 22 | wc -l)

@@ -1,12 +1,14 @@
-# Deploy a big HA OpenStack environment
-#
-# This will require (8192 * 6) == approx. 48GB for the overcloud
-# nodes, plus another 12GB for the undercloud, for a total of around
-# 60GB.
-control_memory: 12192
-compute_memory: 12192
-ceph_memory: 8192
-undercloud_memory: 28288
+# Deploy an HA OpenStack environment
+# (+ 
+#    (* (* 1024 9) 3)    ; control
+#    (* (* 1024 3) 1)	 ; compute
+#    (* (* 1024 6) 3)	 ; ceph
+#    (* (* 1024 13) 1))  ; under
+# 
+control_memory: 9216
+compute_memory: 3072
+ceph_memory: 6144
+undercloud_memory: 13312
 undercloud_disk: 250
 
 # Giving the undercloud additional CPUs can greatly improve heat's

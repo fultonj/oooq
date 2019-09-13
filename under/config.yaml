@@ -3,6 +3,8 @@ undercloud_clean_nodes: true
 ssl_overcloud: false
 step_introspect: false
 containerized_overcloud: true
+containerized_undercloud: true
+containerized_overcloud_upgrade: true
 enable_pacemaker: true
 
 undercloud_enable_ui: false
